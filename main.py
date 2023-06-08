@@ -51,7 +51,7 @@ class App:
             self.master.dt = self.clock.tick(FPS) / 16.667
             if self.master.dt > 10: self.master.dt = 10
             self.debug("FPS:", round(self.clock.get_fps(), 2))
-            self.debug("Offset:", (round(self.master.offset.x, 2), round(self.master.offset.yaaaaaa, 2)))
+            self.debug("Offset:", (round(self.master.offset.x, 2), round(self.master.offset.y, 2)))
 
             for event in pygame.event.get((pygame.QUIT)):
                 
