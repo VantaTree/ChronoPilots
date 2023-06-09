@@ -1,0 +1,12 @@
+$init
+What whould you like to craft today?
+(
+    engine core
+    nothing
+)
+
+$engine core
+You have succusfully crafted the engine core.
+
+$nothing
+exiting the fabricator

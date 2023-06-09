@@ -3,10 +3,11 @@ import random
 from .engine import *
 from .config import *
 
-class Player:
+class Player(pygame.sprite.Sprite):
 
-    def __init__(self, master):
+    def __init__(self, master, grps):
 
+        super().__init__(grps)
         self.master = master
         self.master.player = self
         self.screen = pygame.display.get_surface()
@@ -14,7 +15,7 @@ class Player:
         pos = (88, 96)
 
         self.animations = import_sprite_sheets("graphics/player/anims")
-        self.animation = self.animations["idle_right"]
+        self.animation = self.animations["idle_side"]
         self.image = self.animation[0]
         self.rect = self.image.get_rect()
 
@@ -26,7 +27,7 @@ class Player:
         self.base_rect = pygame.FRect(0, 0, 14, 3)
         self.velocity = pygame.Vector2()
         self.input_direc = pygame.Vector2()
-        self.max_speed = 2
+        self.max_speed = 1.8
         self.acceleration = 0.5
         self.deceleration = 0.5
         self.facing_direc = pygame.Vector2(1, 0)
@@ -37,7 +38,7 @@ class Player:
     def update_image(self):
 
         state = []
-        if self.moving: state.append("walk")
+        if self.moving: state.append("run")
         else: state.append("idle")
 
         if self.facing_direc.y != 0:
@@ -46,10 +47,7 @@ class Player:
             else:
                 state.append("_up")
         elif self.facing_direc.x != 0:
-            if self.facing_direc.x >= 0:
-                state.append("_right")
-            else:
-                state.append("_left")
+            state.append("_side")
 
         state = "".join(state)
         self.master.debug("state: ", state)
@@ -65,8 +63,7 @@ class Player:
 
         self.anim_index += self.anim_speed *self.master.dt
 
-        # self.image = pygame.transform.flip(image, self.facing_direc.x<0, False)
-        self.image = image
+        self.image = pygame.transform.flip(image, self.facing_direc.x<0, False)
         self.rect.midbottom = self.hitbox.midbottom
 
     def get_input(self):
@@ -115,6 +112,8 @@ class Player:
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
                         self.master.game.pause_game()
+                    if event.key == pygame.K_e:
+                        self.master.interaction_manager.pressed_interact()
 
     def draw(self):
 
@@ -148,9 +147,19 @@ def do_collision(player:Player, axis, master):
             rectg = pygame.Rect(x*TILESIZE, y*TILESIZE, TILESIZE, 8)
             if not player.hitbox.colliderect(rect): continue
 
-            cell = get_xy(collision, x, y)
+            cell = get_xy(master.game.collision, x, y)
+            if cell <= 0: continue
 
-            if axis == 0: # x-axis
+            apply_collision(player, axis, rect, cell)
+
+    for rect in master.game.object_hitboxes:
+        if not player.hitbox.colliderect(rect): continue
+        apply_collision(player, axis, rect)
+
+
+def apply_collision(player, axis, rect, cell=1):
+
+    if axis == 0: # x-axis
 
                 if cell == 1:
 
@@ -159,15 +168,15 @@ def do_collision(player:Player, axis, master):
                     if player.velocity.x < 0:
                         player.hitbox.left = rect.right
 
-            elif axis == 1: # y-axis
+    elif axis == 1: # y-axis
 
-                if cell == 1:
-                    if player.velocity.y < 0:
-                        player.hitbox.top = rect.bottom
-                        # player.velocity.y = 0
-                    if player.velocity.y > 0:
-                        player.hitbox.bottom = rect.top
-                        # player.velocity.y = 0
+        if cell == 1:
+            if player.velocity.y < 0:
+                player.hitbox.top = rect.bottom
+                # player.velocity.y = 0
+            if player.velocity.y > 0:
+                player.hitbox.bottom = rect.top
+                # player.velocity.y = 0
 
                         
 def get_xy(grid, x, y):
@@ -176,16 +185,3 @@ def get_xy(grid, x, y):
     try:
         return grid[y][x]
     except IndexError: return
-
-
-collision = [
-    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-]

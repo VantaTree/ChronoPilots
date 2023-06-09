@@ -4,12 +4,10 @@ from .config import *
 from .music import Music
 from .menus import PauseMenu
 from .player import Player
+from .objects import SpaceShip1
+from .interactions import InteractionManager
 
 class Game:
-
-    GRASSY = 0
-    ROCKY = 1
-    CORRIDOR = 2
 
     def __init__(self, master):
 
@@ -18,12 +16,21 @@ class Game:
         self.screen = pygame.display.get_surface()
 
         self.master.offset = pygame.Vector2(0, 0)
+        self.object_hitboxes = []
+
+        self.obj_grp = CustomGroup()
+        self.interaction_manager = InteractionManager(master)
 
         self.pause_menu = PauseMenu(master)
-        self.player = Player(master)
-        self.camera = Camera(master, (len(collision[0]), len(collision)), self.player, lambda p: p.rect.center)
+        self.camera = Camera(master, (len(collision[0]), len(collision)))
+        self.player = Player(master, [self.camera.draw_sprite_grp])
+        self.camera.set_target(self.player, lambda p: p.rect.center)
+
+        SpaceShip1(master, [self.camera.draw_sprite_grp, self.obj_grp], (480, 200))
 
         self.paused = False
+
+        self.collision = collision
 
     def pause_game(self):
         return
@@ -42,8 +49,8 @@ class Game:
 
         self.screen.fill("maroon")
 
-        for y in range(len(collision)):
-            for x in range(len(collision[0])):
+        for y in range(len(self.collision)):
+            for x in range(len(self.collision[0])):
 
                 if not collision[y][x]: continue
 
@@ -53,8 +60,16 @@ class Game:
         self.player.update()
         # self.level.draw_bg()
         self.camera.update()
-        self.player.draw()
+        self.obj_grp.update()
+        self.camera.draw()
+        # self.player.draw()
         # self.level.draw_fg()
+
+        self.interaction_manager.update()
+
+        for rect in self.object_hitboxes:
+            pygame.draw.rect(self.screen, "green", (rect.x+self.master.offset.x, rect.y+self.master.offset.y, rect.width, rect.height), 1)
+
 
 class Camera:
 
@@ -62,6 +77,8 @@ class Camera:
 
         self.master = master
         master.camera = self
+
+        self.draw_sprite_grp = CustomGroup()
 
         self.camera_rigidness = 0.05
 
@@ -110,6 +127,10 @@ class Camera:
         elif self.master.offset.y < -self.size[1]*TILESIZE + H:
             self.master.offset.y = -self.size[1]*TILESIZE + H
 
+    def draw(self):
+
+        self.draw_sprite_grp.draw_y_sort(key=lambda s: s.rect.bottom)
+
     def update(self):
 
         self.update_offset()
@@ -125,5 +146,17 @@ collision = [
     [1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
     [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
     [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 ]
