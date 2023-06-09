@@ -63,7 +63,9 @@ class Player(pygame.sprite.Sprite):
 
         self.anim_index += self.anim_speed *self.master.dt
 
-        self.image = pygame.transform.flip(image, self.facing_direc.x<0, False)
+        if state.endswith("side"):
+            self.image = pygame.transform.flip(image, self.facing_direc.x<0, False)
+        else: self.image = image
         self.rect.midbottom = self.hitbox.midbottom
 
     def get_input(self):
@@ -112,7 +114,7 @@ class Player(pygame.sprite.Sprite):
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
                         self.master.game.pause_game()
-                    if event.key == pygame.K_e:
+                    if event.key in (pygame.K_e, pygame.K_SPACE):
                         self.master.interaction_manager.pressed_interact()
 
     def draw(self):

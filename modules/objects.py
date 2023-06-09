@@ -46,7 +46,8 @@ class SpaceShip1(pygame.sprite.Sprite):
 
         if obj_key == "fabricator":
             if key == "engine core":
-                self.engine_core_fixed = True
+                pass
+                # self.engine_core_fixed = True
 
     def draw(self):
 

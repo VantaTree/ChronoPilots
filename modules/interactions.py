@@ -117,7 +117,7 @@ class DialogueObject:
         for event in pygame.event.get((pygame.KEYDOWN)):
 
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_e:
+                if event.key in (pygame.K_e, pygame.K_SPACE):
                     if self.in_multi_choice:
                         pass
                         self.key = self.the_text[self.key][self.page_index][self.multi_c_index]
