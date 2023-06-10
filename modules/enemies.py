@@ -19,6 +19,7 @@ IDLE = 0
 AGRO = 1
 FOLLOW = 2
 ATTACK = 3
+DYING = 4
 
 
 class Enemy(pygame.sprite.Sprite):
@@ -65,7 +66,8 @@ class Enemy(pygame.sprite.Sprite):
     def update_image(self):
 
         state = []
-        if self.moving: state.append("run")
+        if self.state == DYING: state.append("dead")
+        elif self.moving: state.append("run")
         elif self.state == AGRO: state.append("agro")
         elif self.state == ATTACK: state.append("attack")
         else: state.append("idle")
@@ -79,6 +81,10 @@ class Enemy(pygame.sprite.Sprite):
             self.anim_index = 0
             if self.state == ATTACK:
                 self.state = AGRO
+            elif self.state == DYING:
+                DeadBody(self.master, [self.master.game.camera.draw_sprite_grp], self.animations[state][-1], self.rect.midbottom, self.facing_direc.x<0)
+                self.kill()
+                return
 
         if self.moving: self.anim_speed = 0.15
         elif self.state == ATTACK: self.anim_speed = 0.18
@@ -104,6 +110,8 @@ class Enemy(pygame.sprite.Sprite):
             self.velocity.move_towards_ip( (0, 0), self.deceleration *self.master.dt)
 
     def process_events(self):
+
+        if self.state == DYING: return
 
         if dist_sq(self.master.player.rect.center, self.rect.center) < (12*16)**2:
             if self.state == IDLE:
@@ -135,11 +143,16 @@ class Enemy(pygame.sprite.Sprite):
 
         if self.invinsible: return
         self.health -= damage
+        self.velocity.update()
+        self.moving = False
         self.hurting = True
         self.invinsible = True
-        self.velocity.update()
         self.hurt_for.start(200)
         self.invinsibility_timer.start(1_000)
+
+        if self.health <= 0:
+            self.state = DYING
+            self.anim_index = 0
 
     def control(self):
 
@@ -182,6 +195,24 @@ class Enemy(pygame.sprite.Sprite):
         self.move()
         self.update_image()
         self.master.debug("state:", self.state)
+
+
+class DeadBody(pygame.sprite.Sprite):
+
+    def __init__(self, master, grps, image, pos, flipped=False):
+
+        super().__init__(grps)
+        self.master = master
+        self.screen = pygame.display.get_surface()
+        self.image = image
+        self.rect = self.image.get_rect(midbottom=pos)
+        self.hitbox = self.rect
+        if flipped:
+            self.image = pygame.transform.flip(self.image, True, False)
+
+    def draw(self):
+
+        self.screen.blit(self.image, self.rect.topleft+self.master.offset)
 
 
 def do_collision(entity, axis, master):
