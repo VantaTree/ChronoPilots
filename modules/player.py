@@ -33,6 +33,11 @@ class Player(pygame.sprite.Sprite):
 
         self.moving = False
         self.in_control = True
+        self.attacking = False
+        self.can_attack = True
+
+        self.attack_cooldown = CustomTimer()
+        self.attack_for = CustomTimer()
 
     def update_image(self):
 
@@ -118,6 +123,19 @@ class Player(pygame.sprite.Sprite):
                         self.master.game.pause_game()
                     if event.key in (pygame.K_e, pygame.K_SPACE):
                         self.master.interaction_manager.pressed_interact()
+                    if event.key == pygame.K_SPACE and self.in_control and self.can_attack:
+                        self.attacking = True
+                        self.in_control = False
+                        self.can_attack = False
+                        self.attack_cooldown.start(300)
+                        self.attack_for.start(100)
+                        self.master.game.shoot_projectile("player_small", self)
+
+        if self.attack_cooldown.check():
+            self.can_attack = True
+        if self.attack_for.check():
+            self.attacking = False
+            self.in_control = True
 
     def draw(self):
 

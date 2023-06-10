@@ -7,6 +7,7 @@ from .player import Player
 from .objects import SpaceShip1
 from .interactions import InteractionManager
 from .enemies import load_enemy_sprites, Enemy
+from .projectile import load_projectile_sprites, Projectile
 
 class Game:
 
@@ -17,6 +18,7 @@ class Game:
         self.screen = pygame.display.get_surface()
 
         load_enemy_sprites()
+        load_projectile_sprites()
 
         self.master.offset = pygame.Vector2(0, 0)
         self.object_hitboxes = []
@@ -36,6 +38,11 @@ class Game:
         self.paused = False
 
         self.collision = collision
+
+    def shoot_projectile(self, key, obj):
+
+        if key == "player_small":
+            Projectile(self.master, [self.camera.draw_sprite_grp, self.enemy_grp], "projectile_small", obj.rect.center, obj.facing_direc.copy())
 
     def pause_game(self):
         return
