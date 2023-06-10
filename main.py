@@ -40,7 +40,8 @@ class App:
         self.master.debug = self.debug
         self.game = Game(self.master)
         # self.main_menu = MainMenu(self.master)
-        # Music(self.master)
+        Music(self.master)
+        Ambience(self.master)
 
     async def run(self):
         

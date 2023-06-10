@@ -45,7 +45,8 @@ class Game:
 
     def run(self):
 
-        # self.master.music.run()
+        self.master.music.run()
+        self.master.ambience.run()
 
         if self.paused:
             self.pause_menu.draw()
