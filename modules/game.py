@@ -8,6 +8,7 @@ from .objects import SpaceShip1
 from .interactions import InteractionManager
 from .enemies import load_enemy_sprites, Enemy
 from .projectile import load_projectile_sprites, Projectile
+from .particle import ParticleManager
 
 class Game:
 
@@ -25,6 +26,7 @@ class Game:
 
         self.obj_grp = CustomGroup()
         self.enemy_grp = CustomGroup()
+        self.particle_manager = ParticleManager(master)
         self.interaction_manager = InteractionManager(master)
 
         self.pause_menu = PauseMenu(master)
@@ -75,8 +77,11 @@ class Game:
         self.camera.update()
         self.obj_grp.update()
         self.enemy_grp.update()
+        self.particle_manager.update()
+
+        self.particle_manager.below_grp.draw()
         self.camera.draw()
-        # self.player.draw()
+        self.particle_manager.above_grp.draw()
         # self.level.draw_fg()
 
         self.interaction_manager.update()
