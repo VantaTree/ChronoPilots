@@ -41,9 +41,9 @@ class Enemy(pygame.sprite.Sprite):
         self.hitbox.midbottom = pos
         self.velocity = pygame.Vector2()
         self.target_direc = pygame.Vector2()
-        self.max_speed = 1.5
-        self.acceleration = 0.2
-        self.deceleration = 0.2
+        self.max_speed = 1.1
+        self.acceleration = 0.08
+        self.deceleration = 0.04
         self.facing_direc = pygame.Vector2(1, 0)
 
         self.moving = False
@@ -99,15 +99,24 @@ class Enemy(pygame.sprite.Sprite):
             self.state = IDLE
             self.target_direc.update()
         if self.state == FOLLOW:
-            self.target_direc = pygame.Vector2(self.master.player.rect.centerx - self.rect.centerx,
-                self.master.player.rect.centery - self.rect.centery).normalize()
+            self.target_direc.update(self.master.player.rect.centerx - self.rect.centerx,
+                self.master.player.rect.centery - self.rect.centery)
+            try:
+                self.target_direc.normalize_ip()
+            except ValueError:
+                self.target_direc.update()
 
-        if self.state in (AGRO, FOLLOW) and dist_sq(self.master.player.rect.center, self.rect.center) < 16**2:
-            self.state = ATTACK
-            self.anim_index = 0
-            self.target_direc.update()
-            self.facing_direc = pygame.Vector2(self.master.player.rect.centerx - self.rect.centerx,
-                self.master.player.rect.centery - self.rect.centery).normalize()
+        if self.state in (AGRO, FOLLOW):
+            self.facing_direc.update(self.master.player.rect.centerx - self.rect.centerx,
+                self.master.player.rect.centery - self.rect.centery)
+            try:
+                self.facing_direc.normalize_ip()
+            except ValueError:
+                self.facing_direc.update()
+            if dist_sq(self.master.player.rect.center, self.rect.center) < 16**2:
+                self.state = ATTACK
+                self.anim_index = 0
+                self.target_direc.update()
 
     def control(self):
 

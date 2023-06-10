@@ -52,7 +52,7 @@ class Game:
             self.pause_menu.update()
             return
 
-        self.screen.fill("maroon")
+        self.screen.fill(0x4C0805)
 
         for y in range(len(self.collision)):
             for x in range(len(self.collision[0])):

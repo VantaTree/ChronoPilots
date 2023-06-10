@@ -27,8 +27,8 @@ class Player(pygame.sprite.Sprite):
         self.velocity = pygame.Vector2()
         self.input_direc = pygame.Vector2()
         self.max_speed = 1.8
-        self.acceleration = 0.5
-        self.deceleration = 0.5
+        self.acceleration = 0.3
+        self.deceleration = 0.3
         self.facing_direc = pygame.Vector2(1, 0)
 
         self.moving = False
@@ -90,7 +90,10 @@ class Player(pygame.sprite.Sprite):
             self.facing_direc.update(self.input_direc)
 
         if self.input_direc.x and self.input_direc.y:
-            self.input_direc.normalize_ip()
+            try:
+                self.input_direc.normalize_ip()
+            except ValueError:
+                self.input_direc.update()
 
     def apply_force(self):
 
