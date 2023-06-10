@@ -6,6 +6,7 @@ from .menus import PauseMenu
 from .player import Player
 from .objects import SpaceShip1
 from .interactions import InteractionManager
+from .enemies import load_enemy_sprites, Enemy
 
 class Game:
 
@@ -15,10 +16,13 @@ class Game:
         self.master.game = self
         self.screen = pygame.display.get_surface()
 
+        load_enemy_sprites()
+
         self.master.offset = pygame.Vector2(0, 0)
         self.object_hitboxes = []
 
         self.obj_grp = CustomGroup()
+        self.enemy_grp = CustomGroup()
         self.interaction_manager = InteractionManager(master)
 
         self.pause_menu = PauseMenu(master)
@@ -27,6 +31,7 @@ class Game:
         self.camera.set_target(self.player, lambda p: p.rect.center)
 
         SpaceShip1(master, [self.camera.draw_sprite_grp, self.obj_grp], (480, 200))
+        Enemy(master, [self.camera.draw_sprite_grp, self.enemy_grp], (688, 232), "test")
 
         self.paused = False
 
@@ -61,6 +66,7 @@ class Game:
         # self.level.draw_bg()
         self.camera.update()
         self.obj_grp.update()
+        self.enemy_grp.update()
         self.camera.draw()
         # self.player.draw()
         # self.level.draw_fg()

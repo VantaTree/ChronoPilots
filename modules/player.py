@@ -24,7 +24,6 @@ class Player(pygame.sprite.Sprite):
 
         self.hitbox = pygame.FRect(0, 0, 13, 12)
         self.hitbox.midbottom = pos
-        self.base_rect = pygame.FRect(0, 0, 14, 3)
         self.velocity = pygame.Vector2()
         self.input_direc = pygame.Vector2()
         self.max_speed = 1.8
@@ -137,8 +136,6 @@ def do_collision(player:Player, axis, master):
 
     px = int(player.hitbox.centerx / TILESIZE)
     py = int(player.hitbox.centery / TILESIZE)
-    player.base_rect.midbottom = player.hitbox.midbottom
-    player.base_rect.y += 1
 
     for y in range(py-1, py+2):
         for x in range(px-1, px+2):
