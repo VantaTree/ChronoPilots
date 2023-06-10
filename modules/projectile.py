@@ -14,7 +14,7 @@ def load_projectile_sprites():
 
 class Projectile(pygame.sprite.Sprite):
 
-    def __init__(self, master, grps, sprite_type, pos, direction, anim_speed=0.02, speed=5):
+    def __init__(self, master, grps, sprite_type, pos, direction, anim_speed=0.02, speed=5, damage=1):
 
         super().__init__(grps)
         self.master = master
@@ -30,6 +30,7 @@ class Projectile(pygame.sprite.Sprite):
         self.anim_speed = anim_speed
         self.anim_index = 0
         self.speed = speed
+        self.damage = damage
 
     def update_image(self):
 
@@ -46,6 +47,13 @@ class Projectile(pygame.sprite.Sprite):
     def move(self):
 
         self.hitbox.center += self.direction*self.speed*self.master.dt
+
+    def check_hit(self):
+
+        for enemy in self.master.game.enemy_grp.sprites():
+            if enemy is self: continue
+            if enemy.rect.colliderect(self.rect):
+                enemy.get_hurt(self.damage)
 
     def check_collisoin(self):
 
@@ -70,6 +78,7 @@ class Projectile(pygame.sprite.Sprite):
 
         self.move()
         self.check_collisoin()
+        self.check_hit()
         self.update_image()
 
 

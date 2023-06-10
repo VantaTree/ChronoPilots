@@ -3,6 +3,7 @@ from .config import *
 from .engine import *
 from os import listdir
 from random import randint
+from math import sin
 
 ENEMY_SPRITES = {}
 
@@ -50,8 +51,14 @@ class Enemy(pygame.sprite.Sprite):
 
         self.state = IDLE
 
+        self.health = 5
+        self.invinsible = False
+        self.hurting = False
+
         self.follow_timer = CustomTimer()
         self.follow_for = CustomTimer()
+        self.invinsibility_timer = CustomTimer()
+        self.hurt_for = CustomTimer()
 
         self.follow_timer.start(10_000, 0)
 
@@ -82,6 +89,12 @@ class Enemy(pygame.sprite.Sprite):
         self.image = pygame.transform.flip(image, self.facing_direc.x<0, False)
         self.rect = self.image.get_rect(midbottom = self.hitbox.midbottom)
 
+        if self.invinsible:
+            self.image.fill((255, 255, 255), special_flags=pygame.BLEND_RGB_MAX)
+            if self.hurting:
+                self.image.fill((255, 0, 0), special_flags=pygame.BLEND_RGB_MIN)
+            self.image.set_alpha(int((sin(pygame.time.get_ticks()/30)+1)/2 *255))
+
 
     def apply_force(self):
 
@@ -92,7 +105,7 @@ class Enemy(pygame.sprite.Sprite):
 
     def process_events(self):
 
-        if dist_sq(self.master.player.rect.center, self.rect.center) < (8*16)**2:
+        if dist_sq(self.master.player.rect.center, self.rect.center) < (12*16)**2:
             if self.state == IDLE:
                 self.state = AGRO
         else:
@@ -113,14 +126,24 @@ class Enemy(pygame.sprite.Sprite):
                 self.facing_direc.normalize_ip()
             except ValueError:
                 self.facing_direc.update()
-            if dist_sq(self.master.player.rect.center, self.rect.center) < 16**2:
+            if dist_sq(self.master.player.rect.center, self.rect.center) < (16*2)**2:
                 self.state = ATTACK
                 self.anim_index = 0
                 self.target_direc.update()
 
+    def get_hurt(self, damage):
+
+        if self.invinsible: return
+        self.health -= damage
+        self.hurting = True
+        self.invinsible = True
+        self.velocity.update()
+        self.hurt_for.start(200)
+        self.invinsibility_timer.start(1_000)
+
     def control(self):
 
-        self.moving = bool(self.target_direc)
+        self.moving = bool(self.target_direc) and not self.hurting
         if self.moving:
             self.facing_direc.update(self.target_direc)
 
@@ -133,6 +156,10 @@ class Enemy(pygame.sprite.Sprite):
             self.state = AGRO
             self.target_direc.update()
             self.moving = False
+        if self.invinsibility_timer.check():
+            self.invinsible = False
+        if self.hurt_for.check():
+            self.hurting = False
 
     def move(self):
 
