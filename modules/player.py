@@ -18,7 +18,7 @@ class Player(pygame.sprite.Sprite):
         pos = (2000, 700)
         # pos = (300, 300)
 
-        self.animations = import_sprite_sheets("graphics/player/anims")
+        self.animations = import_sprite_sheets("graphics/player/pilot_1")
         self.animation = self.animations["idle_side"]
         self.image = self.animation[0]
         self.rect = self.image.get_rect()
@@ -47,7 +47,8 @@ class Player(pygame.sprite.Sprite):
     def update_image(self):
 
         state = []
-        if self.moving: state.append("run")
+        if self.attacking: state.append("shoot")
+        elif self.moving: state.append("run")
         else: state.append("idle")
 
         if self.facing_direc.y != 0:
@@ -133,8 +134,8 @@ class Player(pygame.sprite.Sprite):
                         self.attacking = True
                         self.in_control = False
                         self.can_attack = False
-                        self.attack_cooldown.start(300)
-                        self.attack_for.start(100)
+                        self.attack_cooldown.start(500)
+                        self.attack_for.start(200)
                         self.master.level.shoot_projectile("player_small", self)
 
         if self.attack_cooldown.check():

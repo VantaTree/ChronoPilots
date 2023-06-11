@@ -14,7 +14,7 @@ def load_projectile_sprites():
 
 class Projectile(pygame.sprite.Sprite):
 
-    def __init__(self, master, grps, sprite_type, pos, direction, anim_speed=0.02, speed=5, damage=1):
+    def __init__(self, master, grps, sprite_type, pos, direction, anim_speed=0.15, speed=5, damage=1):
 
         super().__init__(grps)
         self.master = master
@@ -42,7 +42,7 @@ class Projectile(pygame.sprite.Sprite):
 
         self.anim_index += self.anim_speed *self.master.dt
 
-        self.image = image
+        self.image = pygame.transform.rotozoom(image, self.direction.angle_to((1, 0)), 1)
 
     def move(self):
 
