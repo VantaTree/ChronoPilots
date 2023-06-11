@@ -11,6 +11,7 @@ class Music:
             "cave": "music/Music_Cave.ogg",
             "crash_site": "music/Music_Crash_Site.ogg",
             "plains": "music/Music_Plains.ogg",
+            "main_menu": "music/Music_Main_Menu.ogg"
         }
         self.stream = pygame.mixer.music
         self.is_ambience = is_ambience
