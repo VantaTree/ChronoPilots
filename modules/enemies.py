@@ -4,6 +4,7 @@ from .engine import *
 from os import listdir
 from random import randint
 from math import sin
+from .entity import *
 
 ENEMY_SPRITES = {}
 
@@ -176,10 +177,11 @@ class Enemy(pygame.sprite.Sprite):
 
     def move(self):
 
+        obj_rects = get_obj_rects(self, self.master)
         self.hitbox.centerx += self.velocity.x * self.master.dt
-        do_collision(self, 0, self.master)
+        do_collision(self, 0, self.master, obj_rects)
         self.hitbox.centery += self.velocity.y * self.master.dt
-        do_collision(self, 1, self.master)
+        do_collision(self, 1, self.master, obj_rects)
 
     def draw(self):
 
@@ -215,55 +217,3 @@ class DeadBody(pygame.sprite.Sprite):
         self.screen.blit(self.image, self.rect.topleft+self.master.offset)
 
 
-def do_collision(entity, axis, master):
-
-    px = int(entity.hitbox.centerx / TILESIZE)
-    py = int(entity.hitbox.centery / TILESIZE)
-
-    for y in range(py-1, py+2):
-        for x in range(px-1, px+2):
-
-            if x < 0 or y < 0: continue
-
-            rect = pygame.Rect(x*TILESIZE, y*TILESIZE, TILESIZE, TILESIZE)
-            rectg = pygame.Rect(x*TILESIZE, y*TILESIZE, TILESIZE, 8)
-            if not entity.hitbox.colliderect(rect): continue
-
-            cell = get_xy(master.level.collision, x, y)
-            if cell <= 0: continue
-
-            apply_collision(entity, axis, rect, cell)
-
-    for rect in master.level.object_hitboxes:
-        if not entity.hitbox.colliderect(rect): continue
-        apply_collision(entity, axis, rect)
-
-
-def apply_collision(entity, axis, rect, cell=1):
-
-    if axis == 0: # x-axis
-
-                if cell == 1:
-
-                    if entity.velocity.x > 0:
-                        entity.hitbox.right = rect.left
-                    if entity.velocity.x < 0:
-                        entity.hitbox.left = rect.right
-
-    elif axis == 1: # y-axis
-
-        if cell == 1:
-            if entity.velocity.y < 0:
-                entity.hitbox.top = rect.bottom
-                # entity.velocity.y = 0
-            if entity.velocity.y > 0:
-                entity.hitbox.bottom = rect.top
-                # entity.velocity.y = 0
-
-                        
-def get_xy(grid, x, y):
-
-    if x < 0 or y < 0: return
-    try:
-        return grid[y][x]
-    except IndexError: return

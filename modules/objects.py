@@ -4,6 +4,23 @@ from .engine import *
 from .interactions import Check, Choice
 from os import listdir
 
+objects_hitboxes = [
+    None,
+    (0, 0, 13, 7),
+    (0, 0, 13, 7),
+    (0, 0, 13, 7),
+    (0, 0, 13, 7),
+    (0, 0, 13, 7),
+    (0, 0, 13, 7),
+    None,
+    None,
+    None,
+    (0, 0, 4, 2),
+    (0, 0, 4, 3),
+    (0, 0, 8, 7),
+    (0, 0, 8, 7)
+]
+
 class SpaceShip1(pygame.sprite.Sprite):
 
     def __init__(self, master, grps, pos, object_hitboxes):

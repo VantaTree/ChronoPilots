@@ -38,6 +38,8 @@ class Level:
         for tileset in self.data.tilesets:
             if tileset.name == "collision":
                 collision_firstgid = tileset.firstgid
+            if tileset.name == "objects":
+                self.object_firstgid = tileset.firstgid
 
         self.collision = self.data.get_layer_by_name("collision").data
         

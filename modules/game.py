@@ -149,9 +149,6 @@ class AdvancedCustomGroup(CustomGroup):
 
         draw_list.extend(self.sprites())
 
-        master.debug("obj count:", len(draw_list))
-        master.debug("", (px1, px2, "", py1, py2))
-
         for sprite in sorted(draw_list, key=self.key):
             try:
                 sprite.draw()

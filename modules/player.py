@@ -2,6 +2,8 @@ import pygame
 import random
 from .engine import *
 from .config import *
+from .objects import objects_hitboxes
+from .entity import *
 
 class Player(pygame.sprite.Sprite):
 
@@ -26,8 +28,8 @@ class Player(pygame.sprite.Sprite):
         self.hitbox.midbottom = pos
         self.velocity = pygame.Vector2()
         self.input_direc = pygame.Vector2()
-        # self.max_speed = 1.8
-        self.max_speed = 5
+        self.max_speed = 1.8
+        # self.max_speed = 5
         self.acceleration = 0.3
         self.deceleration = 0.3
         self.facing_direc = pygame.Vector2(1, 0)
@@ -110,10 +112,11 @@ class Player(pygame.sprite.Sprite):
 
     def move(self):
 
+        obj_rects = get_obj_rects(self, self.master)
         self.hitbox.centerx += self.velocity.x * self.master.dt
-        do_collision(self, 0, self.master)
+        do_collision(self, 0, self.master, obj_rects)
         self.hitbox.centery += self.velocity.y * self.master.dt
-        do_collision(self, 1, self.master)
+        do_collision(self, 1, self.master, obj_rects)
 
     def process_events(self):
 
@@ -153,57 +156,3 @@ class Player(pygame.sprite.Sprite):
 
         self.master.debug("pos: ", (round(self.hitbox.centerx, 2), round(self.hitbox.bottom, 2)))
 
-
-def do_collision(player:Player, axis, master):
-    return
-
-    px = int(player.hitbox.centerx / TILESIZE)
-    py = int(player.hitbox.centery / TILESIZE)
-
-    for y in range(py-1, py+2):
-        for x in range(px-1, px+2):
-
-            if x < 0 or y < 0: continue
-
-            rect = pygame.Rect(x*TILESIZE, y*TILESIZE, TILESIZE, TILESIZE)
-            rectg = pygame.Rect(x*TILESIZE, y*TILESIZE, TILESIZE, 8)
-            if not player.hitbox.colliderect(rect): continue
-
-            cell = get_xy(master.level.collision, x, y)
-            if cell <= 0: continue
-
-            apply_collision(player, axis, rect, cell)
-
-    for rect in master.level.object_hitboxes:
-        if not player.hitbox.colliderect(rect): continue
-        apply_collision(player, axis, rect)
-
-
-def apply_collision(player, axis, rect, cell=1):
-
-    if axis == 0: # x-axis
-
-                if cell == 1:
-
-                    if player.velocity.x > 0:
-                        player.hitbox.right = rect.left
-                    if player.velocity.x < 0:
-                        player.hitbox.left = rect.right
-
-    elif axis == 1: # y-axis
-
-        if cell == 1:
-            if player.velocity.y < 0:
-                player.hitbox.top = rect.bottom
-                # player.velocity.y = 0
-            if player.velocity.y > 0:
-                player.hitbox.bottom = rect.top
-                # player.velocity.y = 0
-
-                        
-def get_xy(grid, x, y):
-
-    if x < 0 or y < 0: return
-    try:
-        return grid[y][x]
-    except IndexError: return
