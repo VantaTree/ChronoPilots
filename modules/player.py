@@ -14,7 +14,7 @@ class Player(pygame.sprite.Sprite):
         self.master.player = self
         self.screen = pygame.display.get_surface()
 
-        pos = (88, 96)
+        pos = (196*16, 71*16)
 
         self.animations = import_sprite_sheets("graphics/player/anims")
         self.animation = self.animations["idle_side"]

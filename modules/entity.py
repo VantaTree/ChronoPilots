@@ -17,7 +17,7 @@ def do_collision(entity, axis, master, obj_rects):
             if not entity.hitbox.colliderect(rect): continue
 
             cell = get_xy(master.level.collision, x, y)
-            if cell <= 0: continue
+            if cell is None or cell <= 0: continue
 
             apply_collision(entity, axis, rect, cell)
 
