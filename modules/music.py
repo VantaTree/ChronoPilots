@@ -10,6 +10,7 @@ class Music:
         self.tracks = {
             "cave": "music/Music_Cave.ogg",
             "crash_site": "music/Music_Crash_Site.ogg",
+            "plains": "music/Music_Plains.ogg",
         }
         self.stream = pygame.mixer.music
         self.is_ambience = is_ambience
@@ -26,7 +27,7 @@ class Music:
         self.START_NEW_TRACK_TIMER = CustomTimer()
 
         self.START_NEW_TRACK_TIMER.start(500)
-        self.change_track_to = "cave"
+        self.change_track_to = "crash_site"
 
     def change_track(self, track_type):
         if track_type == self.current_track: return
@@ -84,9 +85,10 @@ class Ambience(Music):
 
         self.tracks["ambient_cave"] = pygame.mixer.Sound("music/Ambience_Cave.ogg")
         self.tracks["ambient_plains"] = pygame.mixer.Sound("music/Ambience_Plains.ogg")
+        self.tracks["ambient_crash_site"] = pygame.mixer.Sound("music/Ambience_Crash_Site.ogg")
 
         r = pygame.mixer.set_reserved(1)
         print(F"{r} channels reserved")
         self.stream = pygame.mixer.find_channel()
-        self.change_track_to = "ambient_plains"
+        self.change_track_to = "ambient_crash_site"
         self.START_NEW_TRACK_TIMER.start(500)
