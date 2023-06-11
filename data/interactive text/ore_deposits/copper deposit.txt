@@ -1,0 +1,11 @@
+$init
+Mine copper?
+(
+    mine
+    no!
+)
+
+$mine
+You obtained one copper.
+
+$no!

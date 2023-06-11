@@ -1,0 +1,11 @@
+$init
+Mine uranium?
+(
+    mine
+    no!
+)
+
+$mine
+You obtained one uranium.
+
+$no!

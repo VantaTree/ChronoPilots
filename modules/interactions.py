@@ -58,6 +58,7 @@ class InteractionManager:
                 self.dialogue_obj = None
                 self.master.player.in_control = True
                 self.dialogue_obj = None
+                self.interactions.clear()
                 return
             self.dialogue_obj.draw()
 
@@ -85,7 +86,7 @@ class DialogueObject:
         self.multi_c_index = 0
 
         self.letter_increment_timer = CustomTimer()
-        self.letter_increment_timer.start(50, 0)
+        self.letter_increment_timer.start(40, 0)
 
         self.the_text = obj.interaction_text_dict[obj_key]
 
@@ -103,7 +104,7 @@ class DialogueObject:
                 pos = (self.text_pos[0], self.text_pos[1] - (i*20)) - pygame.Vector2(text_surf.get_width()/2, text_surf.get_height())
                 self.screen.blit(text_surf, pos)
                 if self.multi_c_index == len(self.the_text[self.key][self.page_index]) - i - 1:
-                    pygame.draw.line(self.screen, (80, 80, 80), (pos[0], pos[1]+text_surf.get_height()), (pos[0]+text_surf.get_width(), pos[1]+text_surf.get_height()), 2)
+                    pygame.draw.line(self.screen, (80, 80, 80), (pos[0], pos[1]+text_surf.get_height()-2), (pos[0]+text_surf.get_width(), pos[1]+text_surf.get_height()-2), 2)
 
         else:
             text = self.the_text[self.key][self.page_index]
@@ -126,7 +127,7 @@ class DialogueObject:
                         self.full_line_shown = False
                         self.in_multi_choice = False
                         self.letter_index = 0
-                        self.check_mcq_type()
+                        if self.check_mcq_type(): return True
                     elif self.full_line_shown:
                         self.page_index += 1
                         self.full_line_shown = False
@@ -155,7 +156,10 @@ class DialogueObject:
 
     def check_mcq_type(self):
 
-        text = self.the_text[self.key][self.page_index]
+        try:
+            text = self.the_text[self.key][self.page_index]
+        except Exception:
+            return True
         if isinstance(text, Check):
             self.key = self.obj.interaction_logic_check(self.obj_key, self.key, text)
             self.page_index = 0

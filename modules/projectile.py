@@ -66,7 +66,7 @@ class Projectile(pygame.sprite.Sprite):
                 if x < 0 or y < 0: continue
 
                 cell = get_xy(self.master.level.collision, x, y)
-                if cell <= 0: continue
+                if cell is None or cell <= 0: continue
                 self.kill()
                 return
 

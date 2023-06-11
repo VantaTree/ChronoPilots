@@ -1,7 +1,7 @@
 import pygame
 from .engine import *
 from .config import *
-from .objects import SpaceShip1
+from .objects import SpaceShip1, OreDeposit
 from .enemies import Enemy
 from .projectile import Projectile
 from pytmx.util_pygame import load_pygame
@@ -48,6 +48,12 @@ class Level:
 
                 self.collision[y][x] = self.data.tiledgidmap[gid] - collision_firstgid
 
+    def create_ore_object(self, id, ore_obj):
+
+        if not (1 < id <= 6): return
+        l = [None, None, "copper", "diamond", "gold", "titanium", "uranium"]
+        OreDeposit(self.master, [self.obj_grp], l[id], ore_obj, 3)
+
     def get_tile_layers(self):
 
         self.tile_map_layers = [self.data.get_layer_by_name("main"), self.data.get_layer_by_name("over")]
@@ -65,6 +71,7 @@ class Level:
             if chunk_list is None:
                 self.object_chunk[(pos)] = [obj,]
                 continue
+            self.create_ore_object(self.data.tiledgidmap[obj.gid]-self.object_firstgid+1, obj)
             chunk_list.append(obj)
 
     def init_overworld(self):
