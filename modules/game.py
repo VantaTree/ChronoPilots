@@ -1,7 +1,7 @@
 import pygame
 from .engine import *
 from .config import *
-from .music import Music
+from .level import Level
 from .menus import PauseMenu
 from .player import Player
 from .objects import SpaceShip1
@@ -22,29 +22,19 @@ class Game:
         load_projectile_sprites()
 
         self.master.offset = pygame.Vector2(0, 0)
-        self.object_hitboxes = []
 
-        self.obj_grp = CustomGroup()
-        self.enemy_grp = CustomGroup()
-        self.particle_manager = ParticleManager(master)
         self.interaction_manager = InteractionManager(master)
-
         self.pause_menu = PauseMenu(master)
-        self.camera = Camera(master, (len(collision[0]), len(collision)))
-        self.player = Player(master, [self.camera.draw_sprite_grp])
-        self.camera.set_target(self.player, lambda p: p.rect.center)
+        self.particle_manager = ParticleManager(master)
 
-        SpaceShip1(master, [self.camera.draw_sprite_grp, self.obj_grp], (480, 200))
-        Enemy(master, [self.camera.draw_sprite_grp, self.enemy_grp], (688, 232), "test")
+        self.player = Player(master, [])
+        self.camera = Camera(master)
+        self.camera.set_target(self.player, lambda p: p.rect.center)
+        self.camera.draw_sprite_grp.add(self.player)
+        self.level = Level(master, self.player, "terrain")
+        self.master.level = self.level
 
         self.paused = False
-
-        self.collision = collision
-
-    def shoot_projectile(self, key, obj):
-
-        if key == "player_small":
-            Projectile(self.master, [self.camera.draw_sprite_grp, self.enemy_grp], "projectile_small", obj.rect.center, obj.facing_direc.copy())
 
     def pause_game(self):
         return
@@ -62,54 +52,36 @@ class Game:
             self.pause_menu.update()
             return
 
-        self.screen.fill(0x4C0805)
-
-        for y in range(len(self.collision)):
-            for x in range(len(self.collision[0])):
-
-                if not collision[y][x]: continue
-
-                pygame.draw.rect(self.screen, "green", (x*16+self.master.offset.x, y*16+self.master.offset.y, 16, 16), 1)
-
-
         self.player.update()
-        # self.level.draw_bg()
         self.camera.update()
-        self.obj_grp.update()
-        self.enemy_grp.update()
+        self.level.update()
         self.particle_manager.update()
 
+        self.level.draw_bg()
         self.particle_manager.below_grp.draw()
         self.camera.draw()
         self.particle_manager.above_grp.draw()
-        # self.level.draw_fg()
 
         self.interaction_manager.update()
 
-        for rect in self.object_hitboxes:
-            pygame.draw.rect(self.screen, "green", (rect.x+self.master.offset.x, rect.y+self.master.offset.y, rect.width, rect.height), 1)
+        self.level.draw_fg()        
 
 
 class Camera:
 
-    def __init__(self, master, size, target = None, key = None):
+    def __init__(self, master, target = None, key = None):
 
         self.master = master
         master.camera = self
 
-        self.draw_sprite_grp = CustomGroup()
+        self.draw_sprite_grp = AdvancedCustomGroup()
 
         self.camera_rigidness = 0.05
 
         self.target = target
         self.key = key
 
-        self.size = size
-
     def key(self): pass
-
-    def set_map_size(self, size):
-        self.size = size
 
     def set_target(self, target, key):
 
@@ -135,20 +107,23 @@ class Camera:
 
     def clamp_offset(self):
 
-        if self.size[0]*TILESIZE <= W: self.master.offset.x = 0
+        size = self.master.level.size
+
+        if size[0]*TILESIZE <= W: self.master.offset.x = 0
         elif self.master.offset.x > 0: self.master.offset.x = 0
-        elif self.master.offset.x < -self.size[0]*TILESIZE + W:
-            self.master.offset.x = -self.size[0]*TILESIZE + W
+        elif self.master.offset.x < -size[0]*TILESIZE + W:
+            self.master.offset.x = -size[0]*TILESIZE + W
         
-        if self.size[1]*TILESIZE <= H:
+        if size[1]*TILESIZE <= H:
             self.master.offset.y = 0
         elif self.master.offset.y > 0: self.master.offset.y = 0
-        elif self.master.offset.y < -self.size[1]*TILESIZE + H:
-            self.master.offset.y = -self.size[1]*TILESIZE + H
+        elif self.master.offset.y < -size[1]*TILESIZE + H:
+            self.master.offset.y = -size[1]*TILESIZE + H
 
     def draw(self):
 
-        self.draw_sprite_grp.draw_y_sort(key=lambda s: s.rect.bottom)
+        self.draw_sprite_grp.advanced_y_sort_draw(self.master)
+        # self.draw_sprite_grp.advanced_y_sort_draw(self.master)
 
     def update(self):
 
@@ -156,26 +131,40 @@ class Camera:
         self.clamp_offset()
 
 
-collision = [
-    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-]
+class AdvancedCustomGroup(CustomGroup):
+
+    def advanced_y_sort_draw(self, master):
+
+        draw_list = []
+        px1 = int(master.offset.x*-1//CHUNK) -1
+        px2 = px1 + W//CHUNK +2
+        py1 = int(master.offset.y*-1//CHUNK) -1
+        py2 = py1 + H//CHUNK +2
+
+        for y in range(py1, py2+1):
+            for x in range(px1, px2+1):
+                obj_list = master.level.object_chunk.get((x, y))
+                if obj_list is None: continue
+                draw_list.extend(obj_list)
+
+        draw_list.extend(self.sprites())
+
+        master.debug("obj count:", len(draw_list))
+        master.debug("", (px1, px2, "", py1, py2))
+
+        for sprite in sorted(draw_list, key=self.key):
+            try:
+                sprite.draw()
+            except Exception:
+                if sprite.image is not None: # BIG PROBLEM
+                    master.game.screen.blit(sprite.image, (int(sprite.x), int(sprite.y))+master.offset)
+                else:
+                    master.level.data.tiledgidmap[sprite.gid]
+
+    @staticmethod
+    def key(p):
+
+        try:
+            return p.rect.bottom
+        except Exception:
+            return p.y+p.height

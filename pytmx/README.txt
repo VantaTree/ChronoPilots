@@ -1,0 +1,1 @@
+https://github.com/bitcraft/pytmx/releases/tag/v3.31

@@ -141,7 +141,7 @@ class Enemy(pygame.sprite.Sprite):
 
     def get_hurt(self, damage):
 
-        if self.invinsible: return
+        if self.invinsible or self.state == DYING: return
         self.health -= damage
         self.velocity.update()
         self.moving = False
@@ -229,12 +229,12 @@ def do_collision(entity, axis, master):
             rectg = pygame.Rect(x*TILESIZE, y*TILESIZE, TILESIZE, 8)
             if not entity.hitbox.colliderect(rect): continue
 
-            cell = get_xy(master.game.collision, x, y)
+            cell = get_xy(master.level.collision, x, y)
             if cell <= 0: continue
 
             apply_collision(entity, axis, rect, cell)
 
-    for rect in master.game.object_hitboxes:
+    for rect in master.level.object_hitboxes:
         if not entity.hitbox.colliderect(rect): continue
         apply_collision(entity, axis, rect)
 

@@ -6,7 +6,7 @@ from os import listdir
 
 class SpaceShip1(pygame.sprite.Sprite):
 
-    def __init__(self, master, grps, pos):
+    def __init__(self, master, grps, pos, object_hitboxes):
 
         super().__init__(grps)
         self.master = master
@@ -17,7 +17,7 @@ class SpaceShip1(pygame.sprite.Sprite):
 
         self.hitbox = pygame.FRect(0, 0, self.rect.width, 40)
         self.hitbox.midbottom = pos
-        self.master.game.object_hitboxes.append(self.hitbox)
+        object_hitboxes.append(self.hitbox)
 
         self.interactives = [
             ["fabricator", (151, 110, 21, 15)],

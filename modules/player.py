@@ -26,7 +26,8 @@ class Player(pygame.sprite.Sprite):
         self.hitbox.midbottom = pos
         self.velocity = pygame.Vector2()
         self.input_direc = pygame.Vector2()
-        self.max_speed = 1.8
+        # self.max_speed = 1.8
+        self.max_speed = 5
         self.acceleration = 0.3
         self.deceleration = 0.3
         self.facing_direc = pygame.Vector2(1, 0)
@@ -129,7 +130,7 @@ class Player(pygame.sprite.Sprite):
                         self.can_attack = False
                         self.attack_cooldown.start(300)
                         self.attack_for.start(100)
-                        self.master.game.shoot_projectile("player_small", self)
+                        self.master.level.shoot_projectile("player_small", self)
 
         if self.attack_cooldown.check():
             self.can_attack = True
@@ -154,6 +155,7 @@ class Player(pygame.sprite.Sprite):
 
 
 def do_collision(player:Player, axis, master):
+    return
 
     px = int(player.hitbox.centerx / TILESIZE)
     py = int(player.hitbox.centery / TILESIZE)
@@ -167,12 +169,12 @@ def do_collision(player:Player, axis, master):
             rectg = pygame.Rect(x*TILESIZE, y*TILESIZE, TILESIZE, 8)
             if not player.hitbox.colliderect(rect): continue
 
-            cell = get_xy(master.game.collision, x, y)
+            cell = get_xy(master.level.collision, x, y)
             if cell <= 0: continue
 
             apply_collision(player, axis, rect, cell)
 
-    for rect in master.game.object_hitboxes:
+    for rect in master.level.object_hitboxes:
         if not player.hitbox.colliderect(rect): continue
         apply_collision(player, axis, rect)
 
