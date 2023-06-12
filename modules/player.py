@@ -16,10 +16,10 @@ def load_materials():
     (MATERIAL_SPRITE)
 
 PILOT_POSITION = [ None,
-    (1, 1),
-    (1, 1),
-    (1, 1),
-    (1, 1),
+    (3024, 1169+36),
+    (2624, 1360+36),
+    (1136,  320+36),
+    (342,  1300+36),
 ]
 
 class Player(pygame.sprite.Sprite):
@@ -31,9 +31,10 @@ class Player(pygame.sprite.Sprite):
         self.master.player = self
         self.screen = pygame.display.get_surface()
 
-        pos = (196*16, 71*16)
-        pos = (2000, 700)
+        # pos = (196*16, 71*16)
+        # pos = (2000, 700)
         # pos = (300, 300)
+        pos = PILOT_POSITION[self.master.game.which_pilot]
 
         self.all_pilot_anims = [None]
         for i in range(1, 5):
@@ -229,6 +230,7 @@ class Player(pygame.sprite.Sprite):
         self.has_final_resource = False
         self.weapon_upgraded = False
         self.facing_direc.update(0, 1)
+        self.hitbox.midbottom = PILOT_POSITION[self.master.game.which_pilot]
 
         self.attack_cooldown.stop()
         self.attack_for.stop()

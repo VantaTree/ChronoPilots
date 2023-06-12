@@ -87,7 +87,7 @@ class Level:
 
     def init_overworld(self):
 
-        SpaceShip1(self.master, [self.master.camera.draw_sprite_grp, self.obj_grp], (1848, 488), self.object_hitboxes)
+        SpaceShip1(self.master, [self.master.camera.draw_sprite_grp, self.obj_grp], (3024, 1169), self.object_hitboxes)
         Enemy(self.master, [self.master.camera.draw_sprite_grp, self.enemy_grp], (688, 232), "test")
 
         self.maroon_overlay = pygame.Surface(self.screen.get_size())
@@ -111,11 +111,11 @@ class Level:
     def change_pilot(self, which_pilot):
 
         if which_pilot == 2:
-            SpaceShip2(self.master, [self.master.camera.draw_sprite_grp, self.obj_grp], (1848, 988), self.object_hitboxes)
+            SpaceShip2(self.master, [self.master.camera.draw_sprite_grp, self.obj_grp], (2624, 1360), self.object_hitboxes)
         if which_pilot == 3:
-            SpaceShip3(self.master, [self.master.camera.draw_sprite_grp, self.obj_grp], (2250, 988), self.object_hitboxes)
+            SpaceShip3(self.master, [self.master.camera.draw_sprite_grp, self.obj_grp], (1136, 320), self.object_hitboxes)
         if which_pilot == 4:
-            SpaceShip4(self.master, [self.master.camera.draw_sprite_grp, self.obj_grp], (2250, 488), self.object_hitboxes)
+            SpaceShip4(self.master, [self.master.camera.draw_sprite_grp, self.obj_grp], (342, 1300), self.object_hitboxes)
 
         for obj in self.obj_grp.sprites():
             obj.change_pilot(which_pilot)
