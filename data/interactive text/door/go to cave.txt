@@ -1,0 +1,9 @@
+$init
+(
+    stay
+    go to cave
+)
+
+$go to cave
+
+$stay

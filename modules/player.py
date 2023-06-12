@@ -35,6 +35,8 @@ class Player(pygame.sprite.Sprite):
         # pos = (2000, 700)
         # pos = (300, 300)
         pos = PILOT_POSITION[self.master.game.which_pilot]
+        # pos = (3*16, 5*16-8)
+        # pos = (8*16, 173*16)
 
         self.all_pilot_anims = [None]
         for i in range(1, 5):
@@ -49,8 +51,9 @@ class Player(pygame.sprite.Sprite):
         self.anim_index = 0
         self.anim_speed = 0.15
 
-        self.hitbox = pygame.FRect(0, 0, 13, 12)
+        self.hitbox = pygame.FRect(0, 0, 10, 10)
         self.hitbox.midbottom = pos
+        self.rect.midbottom = pos
         self.velocity = pygame.Vector2()
         self.input_direc = pygame.Vector2()
         self.max_speed = 1.8

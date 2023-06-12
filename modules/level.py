@@ -1,7 +1,7 @@
 import pygame
 from .engine import *
 from .config import *
-from .objects import SpaceShip1, OreDeposit, TreeWithStuff, SpaceShip2, SpaceShip3, SpaceShip4
+from .objects import SpaceShip1, OreDeposit, TreeWithStuff, SpaceShip2, SpaceShip3, SpaceShip4, Door
 from .enemies import Enemy
 from .projectile import Projectile
 from pytmx.util_pygame import load_pygame
@@ -75,7 +75,7 @@ class Level:
         self.object_chunk = {}
         for obj in self.object_layer:
             if obj.image is None:
-                # print(self.data.tiledgidmap[obj.gid]-2147483648, "is flipped")
+                print(self.data.tiledgidmap[obj.gid]-2147483648, "is flipped")
                 continue
             pos = int(obj.x//CHUNK), int(obj.y//CHUNK)
             chunk_list = self.object_chunk.get(pos)
@@ -89,6 +89,7 @@ class Level:
 
         SpaceShip1(self.master, [self.master.camera.draw_sprite_grp, self.obj_grp], (3024, 1169), self.object_hitboxes)
         Enemy(self.master, [self.master.camera.draw_sprite_grp, self.enemy_grp], (688, 232), "test")
+        Door(self.master, [self.obj_grp], "cave")
 
         self.maroon_overlay = pygame.Surface(self.screen.get_size())
         self.maroon_overlay.fill(0x4C4A93)
@@ -101,7 +102,8 @@ class Level:
 
     def init_cave(self):
         
-        pass
+        Enemy(self.master, [self.master.camera.draw_sprite_grp, self.enemy_grp], (3*16, 6*16), "test")
+        Door(self.master, [self.obj_grp], "terrain")
 
     def shoot_projectile(self, key, obj):
 
@@ -110,17 +112,16 @@ class Level:
 
     def change_pilot(self, which_pilot):
 
-        if which_pilot == 2:
-            SpaceShip2(self.master, [self.master.camera.draw_sprite_grp, self.obj_grp], (2624, 1360), self.object_hitboxes)
-        if which_pilot == 3:
-            SpaceShip3(self.master, [self.master.camera.draw_sprite_grp, self.obj_grp], (1136, 320), self.object_hitboxes)
-        if which_pilot == 4:
-            SpaceShip4(self.master, [self.master.camera.draw_sprite_grp, self.obj_grp], (342, 1300), self.object_hitboxes)
+        if self.map_type == "terrain":
+            if which_pilot == 2:
+                SpaceShip2(self.master, [self.master.camera.draw_sprite_grp, self.obj_grp], (2624, 1360), self.object_hitboxes)
+            if which_pilot == 3:
+                SpaceShip3(self.master, [self.master.camera.draw_sprite_grp, self.obj_grp], (1136, 320), self.object_hitboxes)
+            if which_pilot == 4:
+                SpaceShip4(self.master, [self.master.camera.draw_sprite_grp, self.obj_grp], (342, 1300), self.object_hitboxes)
 
         for obj in self.obj_grp.sprites():
             obj.change_pilot(which_pilot)
-
-        self.player.change_pilot(which_pilot)
 
     def draw_bg(self):
 
@@ -155,8 +156,8 @@ class Level:
 
     def draw_fg(self):
 
-        for rect in self.object_hitboxes:
-            pygame.draw.rect(self.screen, "green", (rect.x+self.master.offset.x, rect.y+self.master.offset.y, rect.width, rect.height), 1)
+        # for rect in self.object_hitboxes:
+        #     pygame.draw.rect(self.screen, "green", (rect.x+self.master.offset.x, rect.y+self.master.offset.y, rect.width, rect.height), 1)
 
         if self.map_type == "terrain":
 

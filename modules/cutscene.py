@@ -53,7 +53,8 @@ CUTSCENE_TEXT = {
         "............DOOMED............\n............DOOMED............\n............DOOMED............",
         "............DOOMED............\n............DOOMED............\n............DOOMED............\n............DOOMED............\n............DOOMED............\n............DOOMED............",
         "DOOMED FOREVER"
-    ]
+    ],
+    "transition":[]
 }
 
 
@@ -81,11 +82,12 @@ class FiFo:
         self.letter_index = 0
         self.full_text_shown = False
 
-        self.bottom_text = self.master.font_1.render("Press Space to Continue", False, (255, 255, 255))
-        self.bottom_text_rect = self.bottom_text.get_rect(topleft=(5, 5))
+        if self.type != "transition":
+            self.bottom_text = self.master.font_1.render("Press Space to Continue", False, (255, 255, 255))
+            self.bottom_text_rect = self.bottom_text.get_rect(topleft=(5, 5))
 
-        self.letter_increment_timer = CustomTimer()
-        self.letter_increment_timer.start(40, 0)
+            self.letter_increment_timer = CustomTimer()
+            self.letter_increment_timer.start(40, 0)
 
     def check_events(self):
 
@@ -107,7 +109,7 @@ class FiFo:
         
         self.screen.fill((180, 0, 0))
         self.screen.blit(self.black_bg, (0, 0))
-        if self.increment == 0:
+        if self.increment == 0 and self.type != "transition":
             self.screen.blit(self.bottom_text, self.bottom_text_rect)
 
             if self.full_text_shown:
@@ -120,7 +122,7 @@ class FiFo:
 
     def update(self):
 
-        if self.letter_increment_timer.check() and self.halt:
+        if self.type != "transition" and self.letter_increment_timer.check() and self.halt:
             self.letter_index += 1
             if self.letter_index == len(self.texts[self.page_index]):
                 self.full_text_shown = True
@@ -131,8 +133,13 @@ class FiFo:
             if self.alpha >= 256:
                 self.increment = 0
                 self.alpha = 255
-                self.halt = True
+                if self.type == "transition":
+                    self.increment = -1
+                else:
+                    self.halt = True
             elif self.alpha < 0:
+                if self.type == "transition":
+                    return True
                 self.alpha = 0
                 self.increment = 1
                 self.page_index += 1

@@ -1,0 +1,9 @@
+$init
+(
+    stay
+    go to terrain
+)
+
+$go to terrain
+
+$stay

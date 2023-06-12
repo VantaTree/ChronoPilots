@@ -66,6 +66,7 @@ objects_hitboxes = [
 ORE_INTERACTION = load_interaction_text("ore_deposits")
 EDIBLE_INTERACTION = load_interaction_text("tree_with_stuff")
 DEAD_BODY_INTERACTION_TEXT = load_interaction_text("dead_body")
+DOOR_TEXT = load_interaction_text("door")
 
 class Interactable(pygame.sprite.Sprite):
 
@@ -487,3 +488,37 @@ class DeadBody(Interactable):
     def draw(self):
 
         self.screen.blit(self.image, self.rect.topleft+self.master.offset)
+
+
+class Door(Interactable):
+
+    def __init__(self, master, grps, type):
+        super().__init__(master, grps, type)
+
+        if type == "terrain":
+            pos = (3, 2)
+            self.pos_to = TILESIZE+8, 175*TILESIZE
+        elif type == "cave":
+            pos = (1, 173)
+            self.pos_to = 3*TILESIZE+8, 4*TILESIZE
+
+        self.pos = pos
+        self.rect = pygame.Rect(pos[0]*TILESIZE, pos[1]*TILESIZE, TILESIZE, TILESIZE)
+        self.hitbox = self.rect
+
+        self.interaction_text_dict = DOOR_TEXT
+        self.interactives = [
+            [F"go to {type}", (0, 0, 16, 16)],
+        ]
+
+        for i, (_, rect) in enumerate(self.interactives):
+            self.interactives[i][1] = rect[0]+self.rect.x, rect[1]+self.rect.y, rect[2], rect[3]
+
+    def draw(self): pass
+
+    def select_choice(self, obj_key, key):
+
+        if key == "go to terrain":
+            self.master.game.transition_to("terrain", self.pos_to)
+        elif key == "go to cave":
+            self.master.game.transition_to("cave", self.pos_to)

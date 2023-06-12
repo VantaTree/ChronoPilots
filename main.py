@@ -22,6 +22,8 @@ class App:
     MAIN_MENU = 0
     IN_GAME = 1
 
+    TRANSITION = 2
+
     INTRO_CUTSCENE = 4
     P1_TO_P2_CUTSCENE = 5
     P2_TO_P3_CUTSCENE = 6
@@ -113,6 +115,10 @@ class App:
             rect = text.get_rect(midbottom=(W/2, H-10))
             self.screen.blit(text, rect)
 
+        elif self.state == self.TRANSITION:
+            if self.cutscene.run():
+                self.state = self.IN_GAME
+                self.cutscene = None
         elif self.state == self.MAIN_MENU:
             self.main_menu.run()
             pass

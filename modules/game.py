@@ -33,7 +33,10 @@ class Game:
         self.camera = Camera(master)
         self.camera.set_target(self.player, lambda p: p.rect.center)
         self.camera.draw_sprite_grp.add(self.player)
-        self.level = Level(master, self.player, "terrain")
+        self.camera.snap_offset()
+        self.terrain_level = Level(master, self.player, "terrain")
+        self.cave_level = Level(master, self.player, "cave")
+        self.level = self.terrain_level
         self.master.level = self.level
 
         self.paused = False
@@ -62,8 +65,29 @@ class Game:
     def change_pilot(self, which_pilot):
 
         self.which_pilot = which_pilot
-        self.level.change_pilot(self.which_pilot)
+        self.terrain_level.change_pilot(self.which_pilot)
+        self.cave_level.change_pilot(self.which_pilot)
+        self.player.change_pilot(which_pilot)
         self.particle_manager.change_pilot(which_pilot)
+
+        self.level = self.terrain_level
+        self.master.level = self.level
+
+    def transition_to(self, map, pos):
+
+        if map == "terrain":
+            self.level = self.terrain_level
+        elif map == "cave":
+            self.level = self.cave_level
+
+        self.master.level = self.level
+        self.player.hitbox.midbottom = pos
+        self.player.rect.midbottom = pos
+        self.camera.snap_offset()
+        self.player.facing_direc.update(0, 1)
+
+        self.master.app.state = self.master.app.TRANSITION
+        self.master.app.cutscene = FiFo(self.master, "transition")
 
 
     def pause_game(self):
@@ -123,7 +147,7 @@ class Camera:
 
     def snap_offset(self):
 
-        self.master.offset =  (self.get_target_pos() - pygame.Vector2(W/2, H/2)) * -1
+        self.master.offset = (self.get_target_pos() - pygame.Vector2(W/2, H/2)) * -1
 
     def update_offset(self):
 

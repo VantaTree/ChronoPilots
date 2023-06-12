@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tileset version="1.9" tiledversion="1.9.2" name="ground" tilewidth="16" tileheight="16" tilecount="56" columns="8">
- <image source="../../graphics/map/tileset1.png" width="128" height="96"/>
+<tileset version="1.9" tiledversion="1.9.2" name="ground" tilewidth="16" tileheight="16" tilecount="64" columns="8">
+ <image source="../../graphics/map/tileset1.png" width="128" height="128"/>
  <wangsets>
   <wangset name="ground_slant" type="corner" tile="-1">
    <wangcolor name="red" color="#ff0000" tile="-1" probability="1"/>
