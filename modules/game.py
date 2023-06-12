@@ -3,8 +3,7 @@ from .engine import *
 from .config import *
 from .level import Level
 from .menus import PauseMenu
-from .player import Player
-from .objects import SpaceShip1
+from .player import Player, load_materials
 from .interactions import InteractionManager
 from .enemies import load_enemy_sprites, Enemy
 from .projectile import load_projectile_sprites, Projectile
@@ -20,6 +19,7 @@ class Game:
 
         load_enemy_sprites()
         load_projectile_sprites()
+        load_materials()
 
         self.master.offset = pygame.Vector2(0, 0)
 
@@ -35,6 +35,8 @@ class Game:
         self.master.level = self.level
 
         self.paused = False
+
+        self.black_overlay = pygame.Surface(self.screen.get_size())
 
     def pause_game(self):
         return

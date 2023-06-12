@@ -89,7 +89,6 @@ class SpaceShip1(pygame.sprite.Sprite):
         self.engine_core_fixed = False
 
         self.interaction_text_dict = load_interaction_text("spaceship1")
-        # print(self.interaction_text_dict)
 
     def interacted(self, key):
 

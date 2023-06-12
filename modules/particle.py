@@ -22,7 +22,8 @@ class ParticleManager:
             for _ in range(2):
                 offset = (uniform(-5.0, 5.0), uniform(-5.0, 5.0)-3)
                 pos = self.master.player.hitbox.centerx + offset[0], self.master.player.hitbox.bottom + offset[1]
-                color = choice(("brown", "gold", "burlywood", "burlywood1", "burlywood2", "burlywood3", "burlywood4"))
+                color = choice(("brown", "gold", "burlywood", "burlywood1", "burlywood2", "burlywood3", "burlywood4", "#df821c", "#df821c", "#df821c"))
+                # color = choice(("brown", "gold", "#df821c"))
                 Particle(self.master, [self.below_grp], pos, color, size=(2, 2))
 
 

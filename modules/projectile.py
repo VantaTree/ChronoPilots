@@ -51,24 +51,25 @@ class Projectile(pygame.sprite.Sprite):
     def check_hit(self):
 
         for enemy in self.master.level.enemy_grp.sprites():
-            if enemy is self: continue
+            # if enemy is self: continue
             if enemy.rect.colliderect(self.rect):
                 enemy.get_hurt(self.damage)
 
     def check_collisoin(self):
 
-        px = int(self.hitbox.centerx / TILESIZE)
-        py = int(self.hitbox.centery / TILESIZE)
+        if not self.rect.colliderect((
+            -self.master.offset.x-100, -self.master.offset.y-100, W+200, H+200
+        )):
+            self.kill()
+            return
 
-        for y in range(py-1, py+2):
-            for x in range(px-1, px+2):
+        x = int(self.hitbox.centerx / TILESIZE)
+        y = int(self.hitbox.centery / TILESIZE)
 
-                if x < 0 or y < 0: continue
-
-                cell = get_xy(self.master.level.collision, x, y)
-                if cell is None or cell <= 0: continue
-                self.kill()
-                return
+        if x < 0 or y < 0: return
+        cell = get_xy(self.master.level.collision, x, y)
+        if cell is None or cell <= 0: return
+        self.kill()
 
     def draw(self):
 

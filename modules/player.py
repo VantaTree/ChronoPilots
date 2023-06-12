@@ -4,6 +4,16 @@ from .engine import *
 from .config import *
 from .objects import objects_hitboxes
 from .entity import *
+from math import sin, cos, pi, radians, degrees
+
+MATERIAL_SPRITE = {}
+
+def load_materials():
+    global MATERIAL_SPRITE
+
+    MATERIAL_SPRITE = load_pngs_dict("graphics/materials")
+    (MATERIAL_SPRITE)
+
 
 class Player(pygame.sprite.Sprite):
 
@@ -31,6 +41,7 @@ class Player(pygame.sprite.Sprite):
         self.velocity = pygame.Vector2()
         self.input_direc = pygame.Vector2()
         self.max_speed = 1.8
+        self.inventory_speed = 0.5
         # self.max_speed = 5
         self.acceleration = 0.3
         self.deceleration = 0.3
@@ -40,6 +51,17 @@ class Player(pygame.sprite.Sprite):
         self.in_control = True
         self.attacking = False
         self.can_attack = True
+
+        self.health = 5
+        self.max_health = 5
+
+        self.inventory = {"copper":1, "gold":2, "titanium":3, "diamond":4, "rubber":5, "uranium":6, "fruit":7, "vegetable":8, "wood":9}
+        self.inventory_open = False
+
+        self.heart_surf = pygame.image.load("graphics/ui/heart.png").convert_alpha()
+        self.empty_heart_surf = pygame.image.load("graphics/ui/empty_heart.png").convert_alpha()
+        self.heart_surf = pygame.transform.scale_by(self.heart_surf, 5)
+        self.empty_heart_surf = pygame.transform.scale_by(self.empty_heart_surf, 5)
 
         self.attack_cooldown = CustomTimer()
         self.attack_for = CustomTimer()
@@ -95,6 +117,8 @@ class Player(pygame.sprite.Sprite):
             self.input_direc.y += 1
         if keys[pygame.K_w]:
             self.input_direc.y -= 1
+
+        self.inventory_open = keys[pygame.K_TAB]
         
         self.moving = bool(self.input_direc)
         if self.moving:
@@ -108,8 +132,11 @@ class Player(pygame.sprite.Sprite):
 
     def apply_force(self):
 
+        if self.inventory_open: speed = self.inventory_speed
+        else: speed = self.max_speed
+
         if self.moving:
-            self.velocity.move_towards_ip( self.input_direc*self.max_speed, self.acceleration *self.master.dt)
+            self.velocity.move_towards_ip( self.input_direc*speed, self.acceleration *self.master.dt)
         else:
             self.velocity.move_towards_ip( (0, 0), self.deceleration *self.master.dt)
 
@@ -123,7 +150,7 @@ class Player(pygame.sprite.Sprite):
 
     def process_events(self):
 
-        if self.in_control:
+        if self.in_control and not self.inventory_open:
             for event in pygame.event.get((pygame.KEYUP, pygame.KEYDOWN)):
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
@@ -137,12 +164,48 @@ class Player(pygame.sprite.Sprite):
                         self.attack_cooldown.start(500)
                         self.attack_for.start(200)
                         self.master.level.shoot_projectile("player_small", self)
+        else:
+            pygame.event.clear((pygame.KEYUP, pygame.KEYDOWN))
 
         if self.attack_cooldown.check():
             self.can_attack = True
         if self.attack_for.check():
             self.attacking = False
             self.in_control = True
+
+    def draw_inventory(self):
+
+        self.master.game.black_overlay.set_alpha(100)
+        self.screen.blit(self.master.game.black_overlay, (0, 0))
+        self.screen.blit(pygame.transform.gaussian_blur(self.screen, 5, False), (0, 0))
+
+        widx, widy = 50, 50
+        grid = 3
+        mat_size = 16
+
+        offx = (W-widx)/2
+        offy = (H-widy)/2
+
+        paddx = widx/grid+mat_size
+        paddy = widy/grid+mat_size
+
+        for i, (key, amount) in enumerate(self.inventory.items()):
+            y, x = divmod(i, grid)
+            pos = x*paddx+offx-(mat_size/1), y*paddy+offy-(mat_size/1)
+            self.screen.blit(pygame.transform.scale2x(MATERIAL_SPRITE[key]), (pos))
+            text = self.master.font_d.render(F"x{amount}", True, (255, 255, 255))
+            self.screen.blit(text, (pos[0]+mat_size/3*2, pos[1]+mat_size/2))
+
+        radius = 115
+        # pygame.draw.arc(self.screen, (100, 0, 20), (W/2-radius+15, H/2-radius+15, (radius-15)*2, (radius-15)*2), 0, pi*2/self.max_health*self.health, 5)
+        for i in range(self.max_health):
+
+            angle = pi*2/self.max_health*i - pi/2
+            surf = self.heart_surf if i < self.health else self.empty_heart_surf
+            rot_surf = pygame.transform.rotozoom(surf, -90 - degrees(angle), 1)
+            pos = cos(angle)*radius + (W/2), sin(angle)*radius + (H/2)
+            rect = rot_surf.get_rect(center=(pos))
+            self.screen.blit(rot_surf, rect)
 
     def draw(self):
 

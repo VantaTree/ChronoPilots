@@ -5,6 +5,7 @@ from .objects import SpaceShip1, OreDeposit
 from .enemies import Enemy
 from .projectile import Projectile
 from pytmx.util_pygame import load_pygame
+from math import sin
 
 
 class Level:
@@ -20,6 +21,7 @@ class Level:
         self.object_hitboxes = []
         self.obj_grp = CustomGroup()
         self.enemy_grp = CustomGroup()
+        self.projectile_grp = CustomGroup()
 
         self.data = load_pygame(F"data/map/{map_type}.tmx")
         self.size = self.data.width, self.data.height
@@ -79,6 +81,10 @@ class Level:
         SpaceShip1(self.master, [self.master.camera.draw_sprite_grp, self.obj_grp], (480, 200), self.object_hitboxes)
         Enemy(self.master, [self.master.camera.draw_sprite_grp, self.enemy_grp], (688, 232), "test")
 
+        self.maroon_overlay = pygame.Surface(self.screen.get_size())
+        self.maroon_overlay.fill(0x4C0805)
+        self.day_alpha = 128/2
+
     def init_cave(self):
         
         pass
@@ -86,7 +92,7 @@ class Level:
     def shoot_projectile(self, key, obj):
 
         if key == "player_small":
-            Projectile(self.master, [self.master.camera.draw_sprite_grp, self.enemy_grp], "projectile_small", obj.rect.center, obj.facing_direc.copy())
+            Projectile(self.master, [self.master.camera.draw_sprite_grp, self.projectile_grp], "projectile_small", obj.rect.center, obj.facing_direc.copy())
 
     def draw_bg(self):
 
@@ -124,8 +130,17 @@ class Level:
         for rect in self.object_hitboxes:
             pygame.draw.rect(self.screen, "green", (rect.x+self.master.offset.x, rect.y+self.master.offset.y, rect.width, rect.height), 1)
 
+        alpha = int(sin(pygame.time.get_ticks()/50_000-1.5)*self.day_alpha)+self.day_alpha
+        self.maroon_overlay.set_alpha(alpha)
+        self.screen.blit(self.maroon_overlay, (0, 0))
+        self.master.debug("day:", alpha)
+
+        if self.player.inventory_open:
+            self.player.draw_inventory()            
+
     def update(self):
 
         self.obj_grp.update()
         self.enemy_grp.update()
+        self.projectile_grp.update()
 
