@@ -15,6 +15,12 @@ def load_materials():
     MATERIAL_SPRITE = load_pngs_dict("graphics/materials")
     (MATERIAL_SPRITE)
 
+PILOT_POSITION = [ None,
+    (1, 1),
+    (1, 1),
+    (1, 1),
+    (1, 1),
+]
 
 class Player(pygame.sprite.Sprite):
 
@@ -51,7 +57,7 @@ class Player(pygame.sprite.Sprite):
         # self.max_speed = 5
         self.acceleration = 0.3
         self.deceleration = 0.3
-        self.facing_direc = pygame.Vector2(1, 0)
+        self.facing_direc = pygame.Vector2(0, 1)
 
         self.moving = False
         self.in_control = True
@@ -80,10 +86,10 @@ class Player(pygame.sprite.Sprite):
         self.invinsibility_timer = CustomTimer()
         self.hurt_for = CustomTimer()
 
-    def add_inventory(self, item):
+    def add_inventory(self, item, amount=1):
 
-        amount = self.inventory.get(item, 0)
-        self.inventory[item] = amount+1
+        old_amount = self.inventory.get(item, 0)
+        self.inventory[item] = old_amount+amount
 
     def update_image(self):
 
@@ -222,6 +228,7 @@ class Player(pygame.sprite.Sprite):
         self.invinsible = False
         self.has_final_resource = False
         self.weapon_upgraded = False
+        self.facing_direc.update(0, 1)
 
         self.attack_cooldown.stop()
         self.attack_for.stop()

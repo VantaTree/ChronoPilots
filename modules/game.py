@@ -63,6 +63,7 @@ class Game:
 
         self.which_pilot = which_pilot
         self.level.change_pilot(self.which_pilot)
+        self.particle_manager.change_pilot(which_pilot)
 
 
     def pause_game(self):

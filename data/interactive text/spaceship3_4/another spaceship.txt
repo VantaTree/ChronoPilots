@@ -1,2 +1,21 @@
 $init
-oh it's from pilot3
+This ship is absolutely wrecked.
+[
+    can salvage
+    no salvage
+]
+
+$no salvage
+Nothing of it left to salvage.
+
+$can salvage
+I can salvage some resources from this ship.
+(
+    leave
+    salvage
+)
+
+$leave
+
+$salvage
+You were able to salvage some resources.
