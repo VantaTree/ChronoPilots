@@ -63,12 +63,8 @@ objects_hitboxes = [
     (0, 0, 8, 7)
 ]
 
-ORE_INTERACTIONS = [None]
-EDIBLE_INTERACTIONS = [None]
-for pilot in range(1, 5):
-    ORE_INTERACTIONS.append(load_interaction_text(F"ore_deposits{pilot}"))
-    EDIBLE_INTERACTIONS.append(load_interaction_text(F"tree_with_stuff{pilot}"))
-    if pilot == 2: break
+ORE_INTERACTION = load_interaction_text("ore_deposits")
+EDIBLE_INTERACTION = load_interaction_text("tree_with_stuff")
 DEAD_BODY_INTERACTION_TEXT = load_interaction_text("dead_body")
 
 class Interactable(pygame.sprite.Sprite):
@@ -232,17 +228,12 @@ class OreDeposit(Interactable):
         self.rect = pygame.Rect(ore_obj.x, ore_obj.y, ore_obj.width, ore_obj.height)
         self.ore_amount = ore_amount
 
-        self.interaction_text_dict = ORE_INTERACTIONS[self.master.game.which_pilot]
-
+        self.interaction_text_dict = ORE_INTERACTION
         self.interactives = [
             [F"{ore_type} deposit", (0, 0, ore_obj.width, ore_obj.height)],
         ]
         for i, (_, rect) in enumerate(self.interactives):
             self.interactives[i][1] = rect[0]+self.rect.x, rect[1]+self.rect.y, rect[2], rect[3]
-
-    def change_pilot(self, which_pilot):
-
-        self.interaction_text_dict = ORE_INTERACTIONS[which_pilot]
 
     def interaction_logic_check(self, obj_key, key, checks):
 
@@ -277,17 +268,13 @@ class TreeWithStuff(Interactable):
         self.rect = pygame.Rect(ore_obj.x, ore_obj.y, ore_obj.width, ore_obj.height)
         self.stuff_amount = stuff_amount
 
-        self.interaction_text_dict = EDIBLE_INTERACTIONS[self.master.game.which_pilot]
+        self.interaction_text_dict = EDIBLE_INTERACTION
 
         self.interactives = [
             [F"{stuff_type} tree", (0, 0, ore_obj.width, ore_obj.height)],
         ]
         for i, (_, rect) in enumerate(self.interactives):
             self.interactives[i][1] = rect[0]+self.rect.x, rect[1]+self.rect.y, rect[2], rect[3]
-
-    def change_pilot(self, which_pilot):
-
-        self.interaction_text_dict = EDIBLE_INTERACTIONS[which_pilot]
 
     def interaction_logic_check(self, obj_key, key, checks):
 

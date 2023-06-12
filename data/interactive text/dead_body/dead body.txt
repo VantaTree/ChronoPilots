@@ -7,13 +7,13 @@ $init
 
 $nothing
 Gross...
-It's a corpse of another pilot
+It's a corpse of another pilot.
 
 $looted
-I don't want to do anything with this corpse
+I don't want to do anything with this corpse.
 
 $not looted
-Ewww... Doo you want to loot the corpse
+Do you want to loot the disgusting looking corpse?
 (
     ewwwww
     loot it
@@ -22,4 +22,4 @@ Ewww... Doo you want to loot the corpse
 $ewwwww
 
 $loot it
-You have obtained the items the corpse was carrying
+You have obtained the items the corpse was carrying.
