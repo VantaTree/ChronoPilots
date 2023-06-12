@@ -1,0 +1,29 @@
+$init
+[
+    need
+    dont need
+]
+
+$dont need
+You don't need any titanium
+(
+    ok
+    mine them anyway
+)
+
+$need
+Mine titanium?
+(
+    mine
+    no!
+)
+
+$mine
+You obtained one titanium.
+
+$no!
+
+$mine them anyway
+You obtained titanium
+
+$ok

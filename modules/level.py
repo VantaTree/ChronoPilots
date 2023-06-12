@@ -1,11 +1,11 @@
 import pygame
 from .engine import *
 from .config import *
-from .objects import SpaceShip1, OreDeposit
+from .objects import SpaceShip1, OreDeposit, TreeWithStuff
 from .enemies import Enemy
 from .projectile import Projectile
 from pytmx.util_pygame import load_pygame
-from math import sin
+from math import sin, pi
 
 
 class Level:
@@ -50,11 +50,20 @@ class Level:
 
                 self.collision[y][x] = self.data.tiledgidmap[gid] - collision_firstgid
 
-    def create_ore_object(self, id, ore_obj):
+    def create_lvl_object(self, id, ore_obj):
 
-        if not (1 < id <= 6): return
-        l = [None, None, "copper", "diamond", "gold", "titanium", "uranium"]
-        OreDeposit(self.master, [self.obj_grp], l[id], ore_obj, 3)
+        if (1 < id <= 6):
+            l = [None, None, "copper", "diamond", "gold", "titanium", "uranium"]
+            OreDeposit(self.master, [self.obj_grp], l[id], ore_obj, 3)
+        elif id in (14, 15, 16):
+            if id == 14:
+                stuff = "fruit"
+            elif id == 15:
+                stuff = "vegetable"
+            elif id == 16:
+                stuff = "rubber"
+
+            TreeWithStuff(self.master, [self.obj_grp], stuff, ore_obj, 1)
 
     def get_tile_layers(self):
 
@@ -73,17 +82,22 @@ class Level:
             if chunk_list is None:
                 self.object_chunk[(pos)] = [obj,]
                 continue
-            self.create_ore_object(self.data.tiledgidmap[obj.gid]-self.object_firstgid+1, obj)
+            self.create_lvl_object(self.data.tiledgidmap[obj.gid]-self.object_firstgid+1, obj)
             chunk_list.append(obj)
 
     def init_overworld(self):
 
-        SpaceShip1(self.master, [self.master.camera.draw_sprite_grp, self.obj_grp], (480, 200), self.object_hitboxes)
+        SpaceShip1(self.master, [self.master.camera.draw_sprite_grp, self.obj_grp], (1848, 488), self.object_hitboxes)
         Enemy(self.master, [self.master.camera.draw_sprite_grp, self.enemy_grp], (688, 232), "test")
 
         self.maroon_overlay = pygame.Surface(self.screen.get_size())
         self.maroon_overlay.fill(0x4C0805)
-        self.day_alpha = 128/2
+        self.maroon_overlay.set_alpha(0)
+        self.night_alpha = 100
+        self.current_time_alpha = 0
+        self.time_alpha_direction = 1
+        self.day_progress_timer = CustomTimer()
+        self.day_progress_timer.start(3_500, 0)
 
     def init_cave(self):
         
@@ -130,10 +144,23 @@ class Level:
         for rect in self.object_hitboxes:
             pygame.draw.rect(self.screen, "green", (rect.x+self.master.offset.x, rect.y+self.master.offset.y, rect.width, rect.height), 1)
 
-        alpha = int(sin(pygame.time.get_ticks()/50_000-1.5)*self.day_alpha)+self.day_alpha
-        self.maroon_overlay.set_alpha(alpha)
-        self.screen.blit(self.maroon_overlay, (0, 0))
-        self.master.debug("day:", alpha)
+        if self.map_type == "terrain":
+
+            if self.day_progress_timer.check():
+                self.current_time_alpha += self.time_alpha_direction
+                if self.current_time_alpha == 0:
+                    self.time_alpha_direction = 1
+                elif self.current_time_alpha == self.night_alpha:
+                    self.time_alpha_direction = -1
+
+            if self.current_time_alpha < 32:
+                self.day_progress_timer.duration = 3_500
+            else:
+                self.day_progress_timer.duration = 1_000
+
+            self.maroon_overlay.set_alpha(self.current_time_alpha)
+            self.screen.blit(self.maroon_overlay, (0, 0))
+            self.master.debug("day:", self.current_time_alpha)
 
         if self.player.inventory_open:
             self.player.draw_inventory()            

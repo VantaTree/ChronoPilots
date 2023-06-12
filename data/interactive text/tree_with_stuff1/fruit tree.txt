@@ -1,0 +1,29 @@
+$init
+[
+    need
+    dont need
+]
+
+$dont need
+You don't need any fruits
+(
+    ok
+    get them anyway
+)
+
+$need
+pluck fruits?
+(
+    pluck
+    leave
+)
+
+$leave
+
+$pluck
+you plucked a fruit
+
+$get them anyway
+you plucked a fruit
+
+$ok

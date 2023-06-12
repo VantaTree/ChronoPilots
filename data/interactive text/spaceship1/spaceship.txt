@@ -1,0 +1,38 @@
+$init
+[
+    first
+    cannot repair
+    can repair
+    no food
+    ready
+]
+
+$first
+The space ship is broken, I need to repair it.
+Can't stay on this planet for any longer.
+You need 4x titanium and 1x rubber
+
+$can repair
+Initiating repairs...
+.......................................................
+Spaceship repaired successfully.
+
+$cannot repair
+You don't have the necessary materials to repair the spaceship.
+You need 4x titanium and 1x rubber.
+
+$no food
+Before I leave I should get some food.
+A fruit and a vegetable should be enough.
+
+$ready
+Are you ready to leave this planet?
+(
+    not yet!
+    get me out of here
+)
+
+$get me out of here
+getting you out of here
+
+$not yet!

@@ -1,0 +1,29 @@
+$init
+[
+    need
+    dont need
+]
+
+$dont need
+You don't need any copper
+(
+    ok
+    mine them anyway
+)
+
+$need
+Mine copper?
+(
+    mine
+    no!
+)
+
+$mine
+You obtained one copper.
+
+$no!
+
+$mine them anyway
+You obtained copper
+
+$ok

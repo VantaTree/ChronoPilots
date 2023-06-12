@@ -24,11 +24,16 @@ class Player(pygame.sprite.Sprite):
         self.master.player = self
         self.screen = pygame.display.get_surface()
 
-        # pos = (196*16, 71*16)
+        pos = (196*16, 71*16)
         pos = (2000, 700)
         # pos = (300, 300)
 
-        self.animations = import_sprite_sheets("graphics/player/pilot_1")
+        self.all_pilot_anims = [None]
+        for i in range(1, 5):
+            self.all_pilot_anims.append(import_sprite_sheets(F"graphics/player/pilot_{i}"))
+
+
+        self.animations = self.all_pilot_anims[self.master.game.which_pilot]
         self.animation = self.animations["idle_side"]
         self.image = self.animation[0]
         self.rect = self.image.get_rect()
@@ -55,7 +60,8 @@ class Player(pygame.sprite.Sprite):
         self.health = 5
         self.max_health = 5
 
-        self.inventory = {"copper":1, "gold":2, "titanium":3, "diamond":4, "rubber":5, "uranium":6, "fruit":7, "vegetable":8, "wood":9}
+        # self.inventory = {"copper":1, "gold":2, "titanium":3, "diamond":4, "rubber":5, "uranium":6, "fruit":7, "vegetable":8, "wood":9}
+        self.inventory = {}
         self.inventory_open = False
 
         self.heart_surf = pygame.image.load("graphics/ui/heart.png").convert_alpha()
@@ -65,6 +71,11 @@ class Player(pygame.sprite.Sprite):
 
         self.attack_cooldown = CustomTimer()
         self.attack_for = CustomTimer()
+
+    def add_inventory(self, item):
+
+        amount = self.inventory.get(item, 0)
+        self.inventory[item] = amount+1
 
     def update_image(self):
 
@@ -191,6 +202,7 @@ class Player(pygame.sprite.Sprite):
         paddy = widy/grid+mat_size
 
         for i, (key, amount) in enumerate(self.inventory.items()):
+            if amount == 0: continue
             y, x = divmod(i, grid)
             pos = x*paddx+offx-(mat_size/1), y*paddy+offy-(mat_size/1)
             self.screen.blit(pygame.transform.scale2x(MATERIAL_SPRITE[key]), (pos))
