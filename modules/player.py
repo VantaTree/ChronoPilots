@@ -90,7 +90,8 @@ class Player(pygame.sprite.Sprite):
             image = self.animations[state][0]
             self.anim_index = 0
 
-        if self.moving: self.anim_speed = 0.15
+        if self.inventory_open: self.anim_speed = 0.04
+        elif self.moving: self.anim_speed = 0.15
         else: self.anim_speed = 0.08
 
         self.anim_index += self.anim_speed *self.master.dt
@@ -164,7 +165,7 @@ class Player(pygame.sprite.Sprite):
                         self.attack_cooldown.start(500)
                         self.attack_for.start(200)
                         self.master.level.shoot_projectile("player_small", self)
-        else:
+        elif self.inventory_open:
             pygame.event.clear((pygame.KEYUP, pygame.KEYDOWN))
 
         if self.attack_cooldown.check():
