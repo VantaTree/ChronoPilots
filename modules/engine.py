@@ -63,13 +63,14 @@ def _get_mouse_pos(master) -> tuple[int, int]:
 
 class CustomTimer:
 
-    def __init__(self):
+    def __init__(self, auto_clear=False):
 
         self.running = False
 
         self.duration = None
         self.start_time = None
         self.loops = 0
+        self.auto_clear = auto_clear
 
     def start(self, duration, loops=1):
 
@@ -92,7 +93,11 @@ class CustomTimer:
             self.loops -= 1
             if self.loops == 0:
                 self.running = False
-            else: self.start_time += self.duration
+            else:
+                if self.auto_clear:
+                    self.start_time = pygame.time.get_ticks()
+                else:
+                    self.start_time += self.duration
             return True
 
 # def blur_image(image, radius=6):

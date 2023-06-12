@@ -26,6 +26,8 @@ class Level:
         self.data = load_pygame(F"data/map/{map_type}.tmx")
         self.size = self.data.width, self.data.height
 
+        self.spawn_rect = pygame.Rect(-10000, -100000, 4*CHUNK, 4*CHUNK)
+
         if map_type == "terrain":
             self.init_overworld()
         elif map_type == "cave":
@@ -88,8 +90,9 @@ class Level:
     def init_overworld(self):
 
         SpaceShip1(self.master, [self.master.camera.draw_sprite_grp, self.obj_grp], (3024, 1169), self.object_hitboxes)
-        Enemy(self.master, [self.master.camera.draw_sprite_grp, self.enemy_grp], (688, 232), "test")
+        self.spawn_rect.center = (3024, 1169)
         Door(self.master, [self.obj_grp], "cave")
+        Enemy(self.master, [self.master.camera.draw_sprite_grp, self.enemy_grp], (688, 232), "test")
 
         self.maroon_overlay = pygame.Surface(self.screen.get_size())
         self.maroon_overlay.fill(0x4C4A93)
@@ -115,10 +118,13 @@ class Level:
         if self.map_type == "terrain":
             if which_pilot == 2:
                 SpaceShip2(self.master, [self.master.camera.draw_sprite_grp, self.obj_grp], (2624, 1360), self.object_hitboxes)
+                self.spawn_rect.center = (2624, 1360)
             if which_pilot == 3:
                 SpaceShip3(self.master, [self.master.camera.draw_sprite_grp, self.obj_grp], (1136, 320), self.object_hitboxes)
+                self.spawn_rect.center = (1136, 320)
             if which_pilot == 4:
                 SpaceShip4(self.master, [self.master.camera.draw_sprite_grp, self.obj_grp], (342, 1300), self.object_hitboxes)
+                self.spawn_rect.center = (342, 1300)
 
         for obj in self.obj_grp.sprites():
             obj.change_pilot(which_pilot)

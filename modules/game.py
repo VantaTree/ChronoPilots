@@ -73,6 +73,9 @@ class Game:
         self.level = self.terrain_level
         self.master.level = self.level
 
+        # self.master.ambience.fadeout()
+        # self.master.music.change_track("main_menu")
+
     def transition_to(self, map, pos):
 
         if map == "terrain":
@@ -97,8 +100,26 @@ class Game:
 
     def run(self):
 
-        self.master.music.run()
-        self.master.ambience.run()
+        # self.master.music.run()
+        # self.master.ambience.run()
+
+        target_music = None
+        target_amb = None
+        if self.level.map_type == "terrain":
+            if self.level.spawn_rect.colliderect(self.player.rect):
+                target_music = "crash_site"
+                target_amb = "ambient_crash_site"
+            else:
+                target_music = "plains"
+                target_amb = "ambient_plains"
+        else:
+            target_music = "cave"
+            target_amb = "ambient_cave"
+
+        if self.master.music.current_track != target_music:
+            self.master.music.change_track(target_music)
+        if self.master.ambience.current_track != target_amb:
+            self.master.ambience.change_track(target_amb)
 
         if self.paused:
             self.pause_menu.draw()

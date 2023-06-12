@@ -64,6 +64,8 @@ class App:
             if self.master.dt > 10: self.master.dt = 10
             self.debug("FPS:", round(self.clock.get_fps(), 2))
             self.debug("Offset:", (round(self.master.offset.x, 2), round(self.master.offset.y, 2)))
+            self.debug("Music:", self.master.music.current_track)
+            self.debug("Ambie:", self.master.ambience.current_track)
 
             for event in pygame.event.get((pygame.QUIT)):
                 
@@ -73,6 +75,8 @@ class App:
 
             await asyncio.sleep(0)
 
+            self.master.music.run()
+            self.master.ambience.run()
             self.run_states()
             self.debug.draw()
 

@@ -11,7 +11,7 @@ class Music:
             "cave": "music/Music_Cave.ogg",
             "crash_site": "music/Music_Crash_Site.ogg",
             "plains": "music/Music_Plains.ogg",
-            "main_menu": "music/Music_Main_Menu.ogg"
+            "main_menu": "music/Music_MainMenu.ogg"
         }
         self.stream = pygame.mixer.music
         self.is_ambience = is_ambience
@@ -28,7 +28,12 @@ class Music:
         self.START_NEW_TRACK_TIMER = CustomTimer()
 
         self.START_NEW_TRACK_TIMER.start(500)
-        self.change_track_to = "crash_site"
+        self.change_track_to = "main_menu"
+
+    def fadeout(self, time=2_000):
+        if self.is_loaded:
+            self.stream.fadeout(time)
+            self.current_track = None
 
     def change_track(self, track_type):
         if track_type == self.current_track: return
@@ -37,7 +42,9 @@ class Music:
             self.stream.fadeout(2_000)
             delay = 2_100
         self.START_NEW_TRACK_TIMER.start(delay)
+        self.current_track = track_type
         self.change_track_to = track_type
+        print(track_type)
 
     def process_events(self):
 
@@ -91,5 +98,5 @@ class Ambience(Music):
         r = pygame.mixer.set_reserved(1)
         print(F"{r} channels reserved")
         self.stream = pygame.mixer.find_channel()
-        self.change_track_to = "ambient_crash_site"
-        self.START_NEW_TRACK_TIMER.start(500)
+        # self.change_track_to = "ambient_crash_site"
+        # self.START_NEW_TRACK_TIMER.start(500)

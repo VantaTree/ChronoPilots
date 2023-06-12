@@ -13,7 +13,7 @@ class ParticleManager:
         self.above_grp = CustomGroup()
         self.below_grp = CustomGroup()
 
-        self.player_footstep_timer = CustomTimer()
+        self.player_footstep_timer = CustomTimer(True)
         self.player_footstep_timer.start(80, 0)
 
     def change_pilot(self, which_pilot):

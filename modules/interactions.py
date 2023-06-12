@@ -85,7 +85,7 @@ class DialogueObject:
         self.in_multi_choice = False
         self.multi_c_index = 0
 
-        self.letter_increment_timer = CustomTimer()
+        self.letter_increment_timer = CustomTimer(True)
         self.letter_increment_timer.start(40, 0)
 
         self.the_text = obj.interaction_text_dict[obj_key]

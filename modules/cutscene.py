@@ -86,7 +86,7 @@ class FiFo:
             self.bottom_text = self.master.font_1.render("Press Space to Continue", False, (255, 255, 255))
             self.bottom_text_rect = self.bottom_text.get_rect(topleft=(5, 5))
 
-            self.letter_increment_timer = CustomTimer()
+            self.letter_increment_timer = CustomTimer(True)
             self.letter_increment_timer.start(40, 0)
 
     def check_events(self):
