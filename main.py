@@ -24,6 +24,11 @@ class App:
 
     INTRO_CUTSCENE = 4
     P1_TO_P2_CUTSCENE = 5
+    P2_TO_P3_CUTSCENE = 6
+    P3_TO_P4_CUTSCENE = 7
+    WON_CUTSCENE = 8
+    LOST_CUTSCENE = 9
+    GAME_FINISH = 10
 
     def __init__(self):
         
@@ -78,7 +83,36 @@ class App:
         elif self.state == self.P1_TO_P2_CUTSCENE:
             if self.cutscene.run():
                 self.state = self.IN_GAME
+                self.cutscene = FiFo(self.master, "p2-3")
                 self.game.change_pilot(2)
+        elif self.state == self.P2_TO_P3_CUTSCENE:
+            if self.cutscene.run():
+                self.state = self.IN_GAME
+                self.cutscene = FiFo(self.master, "p3-4")
+                self.game.change_pilot(3)
+        elif self.state == self.P3_TO_P4_CUTSCENE:
+            if self.cutscene.run():
+                self.state = self.IN_GAME
+                self.cutscene = None
+                self.game.change_pilot(4)
+        elif self.state == self.WON_CUTSCENE:
+            if self.cutscene.run():
+                self.state = self.GAME_FINISH
+        elif self.state == self.LOST_CUTSCENE:
+            if self.cutscene.run():
+                self.state = self.GAME_FINISH
+        elif self.state == self.GAME_FINISH:
+
+            self.screen.fill(0x0)
+
+            text = self.master.font_big.render("Thanks For Playing!", False, "white")
+            rect = text.get_rect(center=(W/2, H/2))
+            self.screen.blit(text, rect)
+
+            text = self.master.font_1.render("Reload Game To Replay", False, "white")
+            rect = text.get_rect(midbottom=(W/2, H-10))
+            self.screen.blit(text, rect)
+
         elif self.state == self.MAIN_MENU:
             self.main_menu.run()
             pass

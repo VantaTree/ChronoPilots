@@ -66,6 +66,8 @@ class Player(pygame.sprite.Sprite):
 
         self.inventory = {}
         self.inventory_open = False
+        self.has_final_resource = False
+        self.weapon_upgraded = False
 
         self.heart_surf = pygame.image.load("graphics/ui/heart.png").convert_alpha()
         self.empty_heart_surf = pygame.image.load("graphics/ui/empty_heart.png").convert_alpha()
@@ -218,6 +220,8 @@ class Player(pygame.sprite.Sprite):
         self.dying = False
         self.hurting = False
         self.invinsible = False
+        self.has_final_resource = False
+        self.weapon_upgraded = False
 
         self.attack_cooldown.stop()
         self.attack_for.stop()
@@ -232,7 +236,7 @@ class Player(pygame.sprite.Sprite):
         self.dying = True
         self.anim_index = 0
         DeadBody(self.master, [self.master.level.obj_grp, self.master.game.camera.draw_sprite_grp],
-                 self.animations["dead"][0], self.hitbox.midbottom, self.facing_direc.x<0, True, self.inventory)
+                 self.animations["dead"][0], self.hitbox.midbottom, self.facing_direc.x>0, True, self.inventory, self.has_final_resource, self.weapon_upgraded)
         self.master.game.look_next_pilot(self.master.game.which_pilot+1)
 
     def get_hurt(self, damage):

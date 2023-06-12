@@ -131,7 +131,8 @@ class SpaceShip1(Interactable):
     
     def change_pilot(self, which_pilot):
 
-        self.interactives[0][0] = "very old spaceship"
+        if which_pilot == 2:
+            self.interactives[0][0] = "very old spaceship"
 
     def interaction_logic_check(self, obj_key, key, checks):
 
@@ -142,13 +143,13 @@ class SpaceShip1(Interactable):
                 self.first_interaction_p1 = False
                 return checks[0]
             elif not self.repaired:
-                if (p.inventory.get("titanium"), p.inventory.get("rubber")) == (4, 1):
+                if p.inventory.get("titanium", 0)>=4 and p.inventory.get("rubber", 0)>=1:
                     p.inventory["titanium"] -= 4
                     p.inventory["rubber"] -= 1
                     self.repaired = True
                     return checks[2]
                 else: return checks[1]
-            elif (p.inventory.get("fruit"), p.inventory.get("vegetable")) != (1, 1):
+            elif p.inventory.get("fruit", 0)>=1 and p.inventory.get("vegetable", 0)>=1:
                 p.inventory["vegetable"] -= 1
                 p.inventory["fruit"] -= 1
                 return checks[3]
@@ -157,9 +158,9 @@ class SpaceShip1(Interactable):
     def select_choice(self, obj_key, key):
 
         if key == "get me out of here":
-            self.master.game.look_next_pilot(2)
             self.kill()
             self.master.level.object_hitboxes.remove(self.hitbox)
+            self.master.game.look_next_pilot(2)
 
 
 class SpaceShip2(Interactable):
@@ -188,16 +189,15 @@ class SpaceShip2(Interactable):
 
     def change_pilot(self, which_pilot):
 
-        #TODO
-        # change things if left behind
-        pass
+        if which_pilot == 3:
+            self.interactives[0][0] = "old spaceship"
 
     def interaction_logic_check(self, obj_key, key, checks):
 
         p = self.master.player
         if not self.edibles_deposited:
-            if (p.inventory.get("diamond"), p.inventory.get("gold"), p.inventory.get("uranium"),
-                p.inventory.get("fruit"), p.inventory.get("vegetable")) == (1, 1, 1, 1, 1):
+            if p.inventory.get("diamond", 0)>=1 and p.inventory.get("gold", 0)>=1 and p.inventory.get("uranium", 0)\
+                >=1 and p.inventory.get("fruit", 0)>=1 and p.inventory.get("vegetable", 0)>=1:
                 p.inventory["diamond"] -= 1
                 p.inventory["gold"] -= 1
                 p.inventory["uranium"] -= 1
@@ -215,6 +215,84 @@ class SpaceShip2(Interactable):
             self.kill()
             self.master.level.object_hitboxes.remove(self.hitbox)
             self.master.game.look_next_pilot(3)
+
+
+class SpaceShip3(Interactable):
+
+    def __init__(self, master, grps, pos, object_hitboxes):
+
+        super().__init__(master, grps, "spaceship3")
+
+        self.image = pygame.image.load("graphics/objects/spaceship.png").convert_alpha()
+        self.rect = self.image.get_rect(midbottom=pos)
+
+        self.hitbox = pygame.Rect(0, 0, self.rect.width, 40)
+        self.hitbox.midbottom = pos
+        object_hitboxes.append(self.hitbox)
+
+        self.interaction_text_dict = load_interaction_text("spaceship3_4")
+        self.interactives = [
+            ["spaceship", (16, 112, 218, 16)],
+        ]
+
+        for i, (_, rect) in enumerate(self.interactives):
+            self.interactives[i][1] = rect[0]+self.rect.x, rect[1]+self.rect.y, rect[2], rect[3]
+
+        # self.first_interaction_p3 = True
+
+    def change_pilot(self, which_pilot):
+
+        if which_pilot == 4:
+            self.interactives[0][0] = "another spaceship"
+
+    def interaction_logic_check(self, obj_key, key, checks):
+
+        p = self.master.player
+        if key == "init":
+            if p.has_final_resource:
+                return checks[0]
+            else: return checks[1]
+        elif key == "heal":
+            if p.health == p.max_health:
+                return checks[0]
+            elif p.inventory.get("vegetable", 0)>=1 and p.inventory.get("fruit", 0)>=1:
+                p.inventory["vegetable"] -= 1
+                p.inventory["fruit"] -= 1
+                p.health += 1
+                return checks[1]
+            else: return checks[2]
+        elif key == "upgrade weapon":
+            if p.weapon_upgraded:
+                return checks[0]
+            elif p.inventory.get("titanium", 0)>=5 and p.inventory.get("copper", 0)>=6 and p.inventory.get("diamond", 0)\
+                  >=2 and p.inventory.get("uranium", 0)>=3 and p.inventory.get("gold", 0)>=1:# == (5, 6, 2, 3, 1):
+                p.inventory["titanium"] -= 5
+                p.inventory["copper"] -= 6
+                p.inventory["diamond"] -= 2
+                p.inventory["uranium"] -= 3
+                p.inventory["gold"] -= 1
+                p.weapon_upgraded = True
+                return checks[1]
+            else: return checks[2]
+
+            
+    def select_choice(self, obj_key, key):
+
+        if key == "leave": #TODO
+            self.kill()
+            self.master.level.object_hitboxes.remove(self.hitbox)
+            self.master.game.look_next_pilot(4)
+
+
+class SpaceShip4(SpaceShip3):
+
+    def __init__(self, master, grps, pos, object_hitboxes):
+        super().__init__(master, grps, pos, object_hitboxes)
+        self.image = pygame.image.load("graphics/objects/spaceship.png").convert_alpha()
+
+    def change_pilot(self, which_pilot): pass
+
+    def select_choice(self, obj_key, key): pass
 
 
 class OreDeposit(Interactable):
@@ -246,6 +324,8 @@ class OreDeposit(Interactable):
                 if obj_key in ("gold deposit", "diamond deposit", "uranium deposit") and self.master.player.inventory.get(self.ore_type, 0) < 1:
                     return checks[0]
                 else: return checks[1]
+            elif self.master.game.which_pilot in (3, 4):
+                return checks[0]
             
     def select_choice(self, obj_key, key):
 
@@ -287,6 +367,8 @@ class TreeWithStuff(Interactable):
                 if obj_key in ("fruit tree", "vegetable tree") and self.master.player.inventory.get(self.stuff_type, 0) < 1:
                     return checks[0]
                 else: return checks[1]
+            elif self.master.game.which_pilot in (3, 4):
+                return checks[0]
             
     def select_choice(self, obj_key, key):
 
@@ -300,7 +382,7 @@ class TreeWithStuff(Interactable):
 
 class DeadBody(Interactable):
 
-    def __init__(self, master, grps, image, pos, flipped=False, interactable=False, inventory=None):
+    def __init__(self, master, grps, image, pos, flipped=False, interactable=False, inventory=None, has_final_resource=False, weapon_upgraded=False):
 
         super().__init__(master, grps, "dead body")
         self.master = master
@@ -323,6 +405,8 @@ class DeadBody(Interactable):
                 self.interactives[i][1] = rect[0]+self.rect.x, rect[1]+self.rect.y, rect[2], rect[3]
 
             self.inventory = inventory.copy()
+            self.has_final_resource = has_final_resource
+            self.weapon_upgraded = weapon_upgraded
             self.looted = False
 
     def interaction_logic_check(self, obj_key, key, checks):
@@ -342,6 +426,9 @@ class DeadBody(Interactable):
             for key, amount in self.inventory.items():
                 old_amount = self.master.player.inventory.get(key, 0)
                 self.master.player.inventory[key] = old_amount+amount
+
+            self.master.player.has_final_resource = self.has_final_resource
+            self.master.player.weapon_upgraded = self.weapon_upgraded
 
     def draw(self):
 

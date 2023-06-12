@@ -1,0 +1,64 @@
+$init
+[
+    has res
+    no res
+]
+
+$has res
+Congratulations, you have found retrieved the rare exotic resource.
+Would you like you leave and become a HERO?
+(
+    I'll wait
+    beocme the hero
+)
+
+$I'll wait
+
+$become a hero
+
+$no res
+Would you like to craft something to help with your mission?
+(
+    leave
+    craft
+)
+
+$leave
+
+$craft
+(
+    upgrade weapon
+    heal
+)
+
+$heal
+[
+    full health
+    can heal
+    cannot heal
+]
+
+$can heal
+One heart healed.
+
+$full health
+You already have full health, no need to heal
+
+$cannot heal
+Oops, you need 1x rare fruit and 1x rare vegetable to make a healing drug.
+
+$upgrade weapon
+[
+    already upgraded
+    can upgrade
+    cannot upgrade
+]
+
+$already upgraded
+Weapon already upgraded
+
+$can upgrade
+Weapon upgraded, it will now be bigger and deal double damage.
+
+$cannot upgrade
+Oops, you need 5x titanium, 6x copper, 2x diamond, 3x uranium and 1x gold to upgrade your weapon.

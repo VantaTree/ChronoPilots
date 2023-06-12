@@ -8,6 +8,7 @@ from .interactions import InteractionManager
 from .enemies import load_enemy_sprites, Enemy
 from .projectile import load_projectile_sprites, Projectile
 from .particle import ParticleManager
+from .cutscene import FiFo
 
 class Game:
 
@@ -43,6 +44,18 @@ class Game:
 
         if next_pilot == 2:
             state = self.master.app.P1_TO_P2_CUTSCENE
+        elif next_pilot == 3:
+            state = self.master.app.P2_TO_P3_CUTSCENE
+        elif next_pilot == 4:
+            state = self.master.app.P3_TO_P4_CUTSCENE
+        elif next_pilot == 5:
+            if self.player.dying:
+                game_state = "lost"
+                state = self.master.app.LOST_CUTSCENE
+            else:
+                game_state = "won"
+                state = self.master.app.WON_CUTSCENE
+            self.master.app.cutscene = FiFo(self.master, F"end {game_state}")
         self.master.app.state = state
 
 

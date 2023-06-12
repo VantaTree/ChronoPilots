@@ -1,7 +1,7 @@
 import pygame
 from .engine import *
 from .config import *
-from .objects import SpaceShip1, OreDeposit, TreeWithStuff, SpaceShip2
+from .objects import SpaceShip1, OreDeposit, TreeWithStuff, SpaceShip2, SpaceShip3, SpaceShip4
 from .enemies import Enemy
 from .projectile import Projectile
 from pytmx.util_pygame import load_pygame
@@ -112,6 +112,10 @@ class Level:
 
         if which_pilot == 2:
             SpaceShip2(self.master, [self.master.camera.draw_sprite_grp, self.obj_grp], (1848, 988), self.object_hitboxes)
+        if which_pilot == 3:
+            SpaceShip3(self.master, [self.master.camera.draw_sprite_grp, self.obj_grp], (2250, 988), self.object_hitboxes)
+        if which_pilot == 4:
+            SpaceShip4(self.master, [self.master.camera.draw_sprite_grp, self.obj_grp], (2250, 488), self.object_hitboxes)
 
         for obj in self.obj_grp.sprites():
             obj.change_pilot(which_pilot)

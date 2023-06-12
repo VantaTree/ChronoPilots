@@ -18,12 +18,42 @@ CUTSCENE_TEXT = {
         "13-6-3069. Exactly 4 years and 2 days ago, this planet was first discovered. It was a complete accident, some idiot managed to crash into the planet.",
         "4-5-4-6-P       END LOG.",
         "Mission Briefing",
-        "13-6-3069\nCaptian Less Idiot, After a few years of carefull observations we have concluded that planet 4-5-4-6-P is vavluable enough. Your job is to scout the area and collect a few key resources, some minerals and some bio matter. We have given you a gun to defend yourself in case of any hostilities, which I doubt there are. Good Luck out there. END",
+        "13-6-3069\nCaptian Less Idiot, After a few years of careful observations we have concluded that planet 4-5-4-6-P is valuable enough. Your job is to scout the area and collect a few key resources, some minerals and some bio matter. We have given you a gun to defend yourself in case of any hostilities, which I doubt there are. Good Luck out there. END.",
         "I am gonna be a Pilot I always dreamed of, onwards and beyond."
     ],
-    "p2-3":[],
-    "p3-4":[],
-    "end":[],
+    "p2-3":[
+        "17-3-4209",
+        "This is no ordinary day. It's the day where everything began, the monster it will consume us all",
+        "Mission Briefing",
+        "3-9-4200\nCaption Snaily Roach, It is finally time to retrieve that inconceivable resource from planet 4-5-4-6-P. It has been long enough. Your job is to get to the grudges of the deepest part, find the final resource and bring it back safely.",
+        "We have equipped your spaceship with advanced fabrication capabilites, espessially with the capability to craft the red magic itself. Good Luck, Be on your way.",
+        "And if you precede the result will be gruesome. END.",
+        "...",
+        "I Caption Snaily Roach have been waiting for this moment for my entire life. Mama kaka I will make you proud. and especially  you Sergant Frog.",
+        "It's Wednesday my Dudes."
+    ],
+    "p3-4":[
+        "TEXT LOG #98214",
+        "Get the **** over with this, we have had so many failure in the past decade it's such an embarrassment, why can't you guys just get that stupid ****ing peice of shit. ****ing dumbasses.",
+        "Mission Briefing",
+        "17-3-4209\n Captian kisnip, This is our last hope, we have got nothing, you will have to do with this outdated spaceship, it has everything the first one did. You job is well get that damn thing, you know it everyone knows it.",
+        "If we fail this time it's done, humanity will be over that instant.\nWe are counting on you.",
+        "Now get out there get the final resource. END.",
+        "...It's.Now.Or.Never...",
+        "I... I have ne..ver ever been this scared in my entrire life, including if all those red dreams were actually true.",
+        "O god of the cosmos save me, do something"
+    ],
+    "end won":[
+        "yay you won"
+    ],
+    "end lost":[
+        "DOOMED",
+        "...DOOMED...",
+        "......DOOMED......",
+        "............DOOMED............\n............DOOMED............\n............DOOMED............",
+        "............DOOMED............\n............DOOMED............\n............DOOMED............\n............DOOMED............\n............DOOMED............\n............DOOMED............",
+        "DOOMED FOREVER"
+    ]
 }
 
 

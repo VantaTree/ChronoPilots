@@ -163,6 +163,8 @@ class DialogueObject:
         if isinstance(text, Check):
             self.key = self.obj.interaction_logic_check(self.obj_key, self.key, text)
             self.page_index = 0
+            if self.page_index == len(self.the_text[self.key]):
+                return True
         elif isinstance(text, Choice):
             self.in_multi_choice = True
             self.multi_c_index = 0
