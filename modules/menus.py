@@ -31,13 +31,15 @@ class Button():
     def interact(self, mouse_pos, click=False):
 
         if click and self.mouse_hover:
-            if self.action != "start":self.master.sounds["click"].play()
+            if self.action not in ("start", "resume"):
+                self.master.sounds["UI_Select"].play()
+
             return self.action
         self.mouse_hover = self.detection_rect.collidepoint(mouse_pos)
         if self.mouse_hover:
             if not self.hover_sound_played:
                 self.hover_sound_played = True
-                self.master.sounds["soft_click"].play()
+                self.master.sounds["UI_Hover"].play()
         else:self.hover_sound_played = False
 
     def draw(self):
@@ -57,10 +59,10 @@ class MainMenu():
         self.master.main_menu = self
         self.screen = pygame.display.get_surface()
         self.x_shift = 0
-        self.title_surf = self.master.font_big.render('Chrono Pilots', False, (163, 32, 28))
+        self.title_surf = self.master.font_big.render('Chrono Pilots', False, (235, 192, 72))
         self.title_rect = self.title_surf.get_rect(midtop=(W/2, 40))
-        self.title_shadow = self.master.font_big.render('Chrono Pilots', False, (105, 75, 105))
-        self.title_shadow.set_alpha(200)
+        self.title_shadow = self.master.font_big.render('Chrono Pilots', False, (255, 212, 92))
+        self.title_shadow.set_alpha(100)
         self.buttons:list[Button] = []
         self.create_buttons()
         
@@ -81,8 +83,8 @@ class MainMenu():
                 for button in self.buttons:
                     action = button.interact(event.pos, click=True)
                     if action == 'start':
-                        self.master.music.change_track("in_game")
-                        self.master.sounds["click"].play()
+                        # self.master.music.change_track("in_game")
+                        self.master.sounds["SFX_Spawn"].play()
                         self.master.app.state = self.master.app.IN_GAME
                     elif action == 'fullscreen':
                         pygame.display.toggle_fullscreen()
@@ -94,7 +96,7 @@ class MainMenu():
 
     def draw(self):
 
-        self.screen.fill((192, 104, 114))
+        self.screen.fill((80, 0, 0))
 
         self.screen.blit(self.title_shadow, (self.title_rect.x-2, self.title_rect.y+2))
         self.screen.blit(self.title_surf, self.title_rect)
@@ -115,10 +117,10 @@ class PauseMenu():
         self.master.pause_menu = self
 
         self.screen = pygame.display.get_surface()
-        self.bg = self.screen.copy()
+        # self.bg = self.screen.copy()
         self.bg_overlay = pygame.Surface(self.screen.get_size())
-        self.bg_overlay.fill(0xb5737c)
-        self.bg_overlay.set_alpha(192)
+        # self.bg_overlay.fill(0xb5737c)
+        self.bg_overlay.set_alpha(150)
 
         self.buttons:list[Button] = []
         self.create_buttons()
@@ -130,21 +132,22 @@ class PauseMenu():
         Button(self.master, (W//2, H*0.6), 'quit', self.buttons)
 
     def open(self):
-        self.bg = self.screen.copy()
-        self.master.sounds["click"].play()
+        self.bg = pygame.transform.gaussian_blur(self.screen, 5, False)
+        self.master.sounds["UI_Pause"].play()
 
     def update(self):
         
         for event in pygame.event.get((pygame.KEYDOWN, pygame.MOUSEBUTTONDOWN)):
             if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
                 self.master.game.paused = False
-                self.master.sounds["click"].play()
+                self.master.sounds["UI_Return"].play()
                 return
             if event.type == pygame.MOUSEBUTTONDOWN and event.button==1:
                 for button in self.buttons:
                     action = button.interact(event.pos, click=True)
                     if action == 'resume':
                         self.master.game.paused = False
+                        self.master.sounds["UI_Return"].play()
                     elif action == 'fullscreen':
                         pygame.display.toggle_fullscreen()
                     elif action == 'quit':

@@ -31,7 +31,7 @@ class App:
         # pygame.display.set_icon(icon)
         self.clock = pygame.time.Clock()
 
-        self.state = self.IN_GAME
+        self.state = self.MAIN_MENU
 
         self.master = Master()
         SoundSet(self.master)
@@ -39,7 +39,7 @@ class App:
         self.debug = Debug(self.screen, font=self.master.font_d, offset=4)
         self.master.debug = self.debug
         self.game = Game(self.master)
-        # self.main_menu = MainMenu(self.master)
+        self.main_menu = MainMenu(self.master)
         Music(self.master)
         Ambience(self.master)
 
@@ -68,7 +68,7 @@ class App:
     def run_states(self):
 
         if self.state == self.MAIN_MENU:
-            # self.main_menu.run()
+            self.main_menu.run()
             pass
         elif self.state == self.IN_GAME:
             self.game.run()

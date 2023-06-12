@@ -39,7 +39,6 @@ class Game:
         self.black_overlay = pygame.Surface(self.screen.get_size())
 
     def pause_game(self):
-        return
         if not self.paused:
             self.paused = True
             self.pause_menu.open()
