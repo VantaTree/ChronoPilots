@@ -44,7 +44,6 @@ class Music:
         self.START_NEW_TRACK_TIMER.start(delay)
         self.current_track = track_type
         self.change_track_to = track_type
-        print(track_type)
 
     def process_events(self):
 

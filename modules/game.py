@@ -47,10 +47,13 @@ class Game:
 
         if next_pilot == 2:
             state = self.master.app.P1_TO_P2_CUTSCENE
+            cutscene = "p1-2"
         elif next_pilot == 3:
             state = self.master.app.P2_TO_P3_CUTSCENE
+            cutscene = "p2-3"
         elif next_pilot == 4:
             state = self.master.app.P3_TO_P4_CUTSCENE
+            cutscene = "p3-4"
         elif next_pilot == 5:
             if self.player.dying:
                 game_state = "lost"
@@ -58,8 +61,13 @@ class Game:
             else:
                 game_state = "won"
                 state = self.master.app.WON_CUTSCENE
-            self.master.app.cutscene = FiFo(self.master, F"end {game_state}")
+            cutscene = F"end {game_state}"
+
+        self.master.app.cutscene = FiFo(self.master, cutscene)
         self.master.app.state = state
+
+        self.master.ambience.fadeout()
+        self.master.music.change_track("main_menu")
 
 
     def change_pilot(self, which_pilot):
@@ -72,9 +80,6 @@ class Game:
 
         self.level = self.terrain_level
         self.master.level = self.level
-
-        # self.master.ambience.fadeout()
-        # self.master.music.change_track("main_menu")
 
     def transition_to(self, map, pos):
 
@@ -100,26 +105,24 @@ class Game:
 
     def run(self):
 
-        # self.master.music.run()
-        # self.master.ambience.run()
-
-        target_music = None
-        target_amb = None
-        if self.level.map_type == "terrain":
-            if self.level.spawn_rect.colliderect(self.player.rect):
-                target_music = "crash_site"
-                target_amb = "ambient_crash_site"
+        if self.master.app.state == self.master.app.IN_GAME:
+            target_music = None
+            target_amb = None
+            if self.level.map_type == "terrain":
+                if self.level.spawn_rect.colliderect(self.player.rect):
+                    target_music = "crash_site"
+                    target_amb = "ambient_crash_site"
+                else:
+                    target_music = "plains"
+                    target_amb = "ambient_plains"
             else:
-                target_music = "plains"
-                target_amb = "ambient_plains"
-        else:
-            target_music = "cave"
-            target_amb = "ambient_cave"
+                target_music = "cave"
+                target_amb = "ambient_cave"
 
-        if self.master.music.current_track != target_music:
-            self.master.music.change_track(target_music)
-        if self.master.ambience.current_track != target_amb:
-            self.master.ambience.change_track(target_amb)
+            if self.master.music.current_track != target_music:
+                self.master.music.change_track(target_music)
+            if self.master.ambience.current_track != target_amb:
+                self.master.ambience.change_track(target_amb)
 
         if self.paused:
             self.pause_menu.draw()
