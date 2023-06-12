@@ -19,8 +19,11 @@ class Master:
     
 class App:
 
-    MAIN_MENU = 2
-    IN_GAME = 3
+    MAIN_MENU = 0
+    IN_GAME = 1
+
+    INTRO_CUTSCENE = 4
+    P1_TO_P2_CUTSCENE = 5
 
     def __init__(self):
         
@@ -40,6 +43,7 @@ class App:
         self.master.debug = self.debug
         self.game = Game(self.master)
         self.main_menu = MainMenu(self.master)
+        self.cutscene = FiFo(self.master, "intro")
         Music(self.master)
         Ambience(self.master)
 
@@ -67,7 +71,15 @@ class App:
 
     def run_states(self):
 
-        if self.state == self.MAIN_MENU:
+        if self.state == self.INTRO_CUTSCENE:
+            if self.cutscene.run():
+                self.state = self.IN_GAME
+                self.cutscene = FiFo(self.master, "p1-2")
+        elif self.state == self.P1_TO_P2_CUTSCENE:
+            if self.cutscene.run():
+                self.state = self.IN_GAME
+                self.game.change_pilot(2)
+        elif self.state == self.MAIN_MENU:
             self.main_menu.run()
             pass
         elif self.state == self.IN_GAME:

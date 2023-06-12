@@ -39,6 +39,19 @@ class Game:
 
         self.black_overlay = pygame.Surface(self.screen.get_size())
 
+    def look_next_pilot(self, next_pilot):
+
+        if next_pilot == 2:
+            state = self.master.app.P1_TO_P2_CUTSCENE
+        self.master.app.state = state
+
+
+    def change_pilot(self, which_pilot):
+
+        self.which_pilot = which_pilot
+        self.level.change_pilot(self.which_pilot)
+
+
     def pause_game(self):
         if not self.paused:
             self.paused = True

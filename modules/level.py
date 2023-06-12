@@ -1,7 +1,7 @@
 import pygame
 from .engine import *
 from .config import *
-from .objects import SpaceShip1, OreDeposit, TreeWithStuff
+from .objects import SpaceShip1, OreDeposit, TreeWithStuff, SpaceShip2
 from .enemies import Enemy
 from .projectile import Projectile
 from pytmx.util_pygame import load_pygame
@@ -75,7 +75,7 @@ class Level:
         self.object_chunk = {}
         for obj in self.object_layer:
             if obj.image is None:
-                print(self.data.tiledgidmap[obj.gid]-2147483648, "is flipped")
+                # print(self.data.tiledgidmap[obj.gid]-2147483648, "is flipped")
                 continue
             pos = int(obj.x//CHUNK), int(obj.y//CHUNK)
             chunk_list = self.object_chunk.get(pos)
@@ -91,7 +91,7 @@ class Level:
         Enemy(self.master, [self.master.camera.draw_sprite_grp, self.enemy_grp], (688, 232), "test")
 
         self.maroon_overlay = pygame.Surface(self.screen.get_size())
-        self.maroon_overlay.fill(0x4C0805)
+        self.maroon_overlay.fill(0x4C4A93)
         self.maroon_overlay.set_alpha(0)
         self.night_alpha = 100
         self.current_time_alpha = 0
@@ -107,6 +107,16 @@ class Level:
 
         if key == "player_small":
             Projectile(self.master, [self.master.camera.draw_sprite_grp, self.projectile_grp], "projectile_small", obj.rect.center, obj.facing_direc.copy())
+
+    def change_pilot(self, which_pilot):
+
+        if which_pilot == 2:
+            SpaceShip2(self.master, [self.master.camera.draw_sprite_grp, self.obj_grp], (1848, 988), self.object_hitboxes)
+
+        for obj in self.obj_grp.sprites():
+            obj.change_pilot(which_pilot)
+
+        self.player.change_pilot(which_pilot)
 
     def draw_bg(self):
 

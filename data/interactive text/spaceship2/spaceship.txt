@@ -1,0 +1,25 @@
+$init
+[
+    no food
+    has food
+    ready
+]
+
+$no food
+Collect and bring back resources for research. 1x diamond, 1x uranium, 1x gold and 2x rare bio edibles.
+
+$has food
+depositing resources...
+.............................................................................................................
+resources deposited safely.
+
+$ready
+Mission completed, leave?
+(
+    not yet!
+    leave
+)
+
+$leave
+
+$not yet!

@@ -1,0 +1,29 @@
+$init
+[
+    need
+    dont need
+]
+
+$dont need
+You don't need any rubber
+(
+    ok
+    get them anyway
+)
+
+$need
+pluck rubber?
+(
+    pluck
+    leave
+)
+
+$leave
+
+$pluck
+you plucked some rubber
+
+$get them anyway
+you plucked some rubber
+
+$ok

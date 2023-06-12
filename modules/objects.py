@@ -68,7 +68,7 @@ EDIBLE_INTERACTIONS = [None]
 for pilot in range(1, 5):
     ORE_INTERACTIONS.append(load_interaction_text(F"ore_deposits{pilot}"))
     EDIBLE_INTERACTIONS.append(load_interaction_text(F"tree_with_stuff{pilot}"))
-    break
+    if pilot == 2: break
 
 
 class Interactable(pygame.sprite.Sprite):
@@ -132,10 +132,13 @@ class SpaceShip1(Interactable):
 
         self.first_interaction_p1 = True
         self.repaired = False
-
+    
     def change_pilot(self, which_pilot):
-        
-        pass
+
+        #TODO
+        # change things if left behind
+        self.kill()
+        self.master.level.object_hitboxes.remove(self.hitbox)
 
     def interaction_logic_check(self, obj_key, key, checks):
 
@@ -160,7 +163,55 @@ class SpaceShip1(Interactable):
             
     def select_choice(self, obj_key, key):
 
+        if key == "get me out of here":
+            self.master.game.look_next_pilot(2)
+
+
+class SpaceShip2(Interactable):
+
+    def __init__(self, master, grps, pos, object_hitboxes):
+
+        super().__init__(master, grps, "spaceship2")
+
+        self.image = pygame.image.load("graphics/objects/spaceship.png").convert_alpha()
+        self.rect = self.image.get_rect(midbottom=pos)
+
+        self.hitbox = pygame.Rect(0, 0, self.rect.width, 40)
+        self.hitbox.midbottom = pos
+        object_hitboxes.append(self.hitbox)
+
+        self.interaction_text_dict = load_interaction_text("spaceship2")
+        self.interactives = [
+            ["spaceship", (16, 112, 218, 16)],
+        ]
+
+        for i, (_, rect) in enumerate(self.interactives):
+            self.interactives[i][1] = rect[0]+self.rect.x, rect[1]+self.rect.y, rect[2], rect[3]
+
+        # self.first_interaction_p2 = True
+        self.edibles_deposited = False
+
+    def interaction_logic_check(self, obj_key, key, checks):
+
+        p = self.master.player
+        if not self.edibles_deposited:
+            if (p.inventory.get("diamond"), p.inventory.get("gold"), p.inventory.get("uranium"),
+                p.inventory.get("fruit"), p.inventory.get("vegetable")) == (1, 1, 1, 1, 1):
+                p.inventory["diamond"] -= 1
+                p.inventory["gold"] -= 1
+                p.inventory["uranium"] -= 1
+                p.inventory["fruit"] -= 1
+                p.inventory["vegetable"] -= 1
+                self.edibles_deposited = True
+                return checks[1]
+            else: return checks[0]
+        else: return checks[2]
+
+            
+    def select_choice(self, obj_key, key):
+
         pass
+
 
 
 class OreDeposit(Interactable):
@@ -182,12 +233,21 @@ class OreDeposit(Interactable):
         for i, (_, rect) in enumerate(self.interactives):
             self.interactives[i][1] = rect[0]+self.rect.x, rect[1]+self.rect.y, rect[2], rect[3]
 
+    def change_pilot(self, which_pilot):
+
+        self.interaction_text_dict = ORE_INTERACTIONS[which_pilot]
+
     def interaction_logic_check(self, obj_key, key, checks):
 
         if key == "init":
-            if obj_key == "titanium deposit" and self.master.player.inventory.get(self.ore_type, 0) < 4:
-                return checks[0]
-            else: return checks[1]
+            if self.master.game.which_pilot == 1:
+                if obj_key == "titanium deposit" and self.master.player.inventory.get(self.ore_type, 0) < 4:
+                    return checks[0]
+                else: return checks[1]
+            elif self.master.game.which_pilot == 2:
+                if obj_key in ("gold deposit", "diamond deposit", "uranium deposit") and self.master.player.inventory.get(self.ore_type, 0) < 1:
+                    return checks[0]
+                else: return checks[1]
             
     def select_choice(self, obj_key, key):
 
@@ -218,12 +278,21 @@ class TreeWithStuff(Interactable):
         for i, (_, rect) in enumerate(self.interactives):
             self.interactives[i][1] = rect[0]+self.rect.x, rect[1]+self.rect.y, rect[2], rect[3]
 
+    def change_pilot(self, which_pilot):
+
+        self.interaction_text_dict = EDIBLE_INTERACTIONS[which_pilot]
+
     def interaction_logic_check(self, obj_key, key, checks):
 
         if key == "init":
-            if self.master.player.inventory.get(self.stuff_type, 0) < 1:
-                return checks[0]
-            else: return checks[1]
+            if self.master.game.which_pilot == 1:
+                if self.master.player.inventory.get(self.stuff_type, 0) < 1:
+                    return checks[0]
+                else: return checks[1]
+            elif self.master.game.which_pilot == 2:
+                if obj_key in ("fruit tree", "vegetable tree") and self.master.player.inventory.get(self.stuff_type, 0) < 1:
+                    return checks[0]
+                else: return checks[1]
             
     def select_choice(self, obj_key, key):
 

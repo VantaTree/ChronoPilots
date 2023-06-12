@@ -185,6 +185,22 @@ class Player(pygame.sprite.Sprite):
             self.attacking = False
             self.in_control = True
 
+    def change_pilot(self, which_pilot):
+
+        self.animations = self.all_pilot_anims[which_pilot]
+        self.health = self.max_health
+
+        self.moving = False
+        self.in_control = True
+        self.attacking = False
+        self.can_attack = True
+
+        self.attack_cooldown.stop()
+        self.attack_for.stop()
+
+        #make dead body if neded
+        self.inventory.clear()
+
     def draw_inventory(self):
 
         self.master.game.black_overlay.set_alpha(100)
@@ -223,7 +239,7 @@ class Player(pygame.sprite.Sprite):
     def draw(self):
 
         self.screen.blit(self.image, self.rect.topleft + self.master.offset)
-        pygame.draw.rect(self.screen, "blue", (self.hitbox.x+self.master.offset.x, self.hitbox.y+self.master.offset.y, self.hitbox.width, self.hitbox.height), 1)
+        # pygame.draw.rect(self.screen, "blue", (self.hitbox.x+self.master.offset.x, self.hitbox.y+self.master.offset.y, self.hitbox.width, self.hitbox.height), 1)
 
     def update(self):
 

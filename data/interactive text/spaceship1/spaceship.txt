@@ -33,6 +33,5 @@ Are you ready to leave this planet?
 )
 
 $get me out of here
-getting you out of here
 
 $not yet!

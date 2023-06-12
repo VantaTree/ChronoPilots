@@ -85,7 +85,7 @@ class MainMenu():
                     if action == 'start':
                         # self.master.music.change_track("in_game")
                         self.master.sounds["SFX_Spawn"].play()
-                        self.master.app.state = self.master.app.IN_GAME
+                        self.master.app.state = self.master.app.INTRO_CUTSCENE
                     elif action == 'fullscreen':
                         pygame.display.toggle_fullscreen()
                     elif action == 'quit':
@@ -96,7 +96,7 @@ class MainMenu():
 
     def draw(self):
 
-        self.screen.fill((80, 0, 0))
+        self.screen.fill(0x4C0805)
 
         self.screen.blit(self.title_shadow, (self.title_rect.x-2, self.title_rect.y+2))
         self.screen.blit(self.title_surf, self.title_rect)
@@ -163,3 +163,4 @@ class PauseMenu():
         for button in self.buttons:
             button.draw()
             button.interact(pygame.mouse.get_pos())
+            

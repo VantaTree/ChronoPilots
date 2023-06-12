@@ -1,0 +1,29 @@
+$init
+[
+    need
+    dont need
+]
+
+$dont need
+You don't need any gold
+(
+    ok
+    mine them anyway
+)
+
+$need
+Mine gold?
+(
+    mine
+    no!
+)
+
+$mine
+You obtained one gold.
+
+$no!
+
+$mine them anyway
+You obtained gold
+
+$ok
