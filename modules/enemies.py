@@ -5,6 +5,7 @@ from os import listdir
 from random import randint
 from math import sin
 from .entity import *
+from .objects import DeadBody
 
 ENEMY_SPRITES = {}
 
@@ -186,7 +187,7 @@ class Enemy(pygame.sprite.Sprite):
     def draw(self):
 
         self.screen.blit(self.image, self.rect.topleft + self.master.offset)
-        pygame.draw.rect(self.screen, "blue", (self.hitbox.x+self.master.offset.x, self.hitbox.y+self.master.offset.y, self.hitbox.width, self.hitbox.height), 1)
+        # pygame.draw.rect(self.screen, "blue", (self.hitbox.x+self.master.offset.x, self.hitbox.y+self.master.offset.y, self.hitbox.width, self.hitbox.height), 1)
 
     def update(self):
 
@@ -197,23 +198,4 @@ class Enemy(pygame.sprite.Sprite):
         self.move()
         self.update_image()
         self.master.debug("state:", self.state)
-
-
-class DeadBody(pygame.sprite.Sprite):
-
-    def __init__(self, master, grps, image, pos, flipped=False):
-
-        super().__init__(grps)
-        self.master = master
-        self.screen = pygame.display.get_surface()
-        self.image = image
-        self.rect = self.image.get_rect(midbottom=pos)
-        self.hitbox = self.rect
-        if flipped:
-            self.image = pygame.transform.flip(self.image, True, False)
-
-    def draw(self):
-
-        self.screen.blit(self.image, self.rect.topleft+self.master.offset)
-
 

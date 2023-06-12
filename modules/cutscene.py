@@ -43,6 +43,7 @@ class FiFo:
         self.page_index = 0
         self.alpha = 0
         self.halt = False
+        self.skip = False
 
         self.increment = 1
         self.alpha_speed = 8
@@ -68,6 +69,9 @@ class FiFo:
                         self.halt = False
                         self.full_text_shown = False
                         self.letter_index = 0
+                if event.key == pygame.K_ESCAPE:
+                    self.skip = True
+                    return
                 
     def draw(self):
         
@@ -108,6 +112,7 @@ class FiFo:
     def run(self):
 
         self.check_events()
+        if self.skip: return True
         result = self.update()
         self.draw()
         return result

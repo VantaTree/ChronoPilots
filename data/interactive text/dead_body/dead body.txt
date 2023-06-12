@@ -1,0 +1,25 @@
+$init
+[
+    looted
+    not looted
+    nothing
+]
+
+$nothing
+Gross...
+It's a corpse of another pilot
+
+$looted
+I don't want to do anything with this corpse
+
+$not looted
+Ewww... Doo you want to loot the corpse
+(
+    ewwwww
+    loot it
+)
+
+$ewwwww
+
+$loot it
+You have obtained the items the corpse was carrying

@@ -69,7 +69,7 @@ for pilot in range(1, 5):
     ORE_INTERACTIONS.append(load_interaction_text(F"ore_deposits{pilot}"))
     EDIBLE_INTERACTIONS.append(load_interaction_text(F"tree_with_stuff{pilot}"))
     if pilot == 2: break
-
+DEAD_BODY_INTERACTION_TEXT = load_interaction_text("dead_body")
 
 class Interactable(pygame.sprite.Sprite):
 
@@ -135,10 +135,7 @@ class SpaceShip1(Interactable):
     
     def change_pilot(self, which_pilot):
 
-        #TODO
-        # change things if left behind
-        self.kill()
-        self.master.level.object_hitboxes.remove(self.hitbox)
+        self.interactives[0][0] = "very old spaceship"
 
     def interaction_logic_check(self, obj_key, key, checks):
 
@@ -165,6 +162,8 @@ class SpaceShip1(Interactable):
 
         if key == "get me out of here":
             self.master.game.look_next_pilot(2)
+            self.kill()
+            self.master.level.object_hitboxes.remove(self.hitbox)
 
 
 class SpaceShip2(Interactable):
@@ -191,6 +190,12 @@ class SpaceShip2(Interactable):
         # self.first_interaction_p2 = True
         self.edibles_deposited = False
 
+    def change_pilot(self, which_pilot):
+
+        #TODO
+        # change things if left behind
+        pass
+
     def interaction_logic_check(self, obj_key, key, checks):
 
         p = self.master.player
@@ -210,8 +215,10 @@ class SpaceShip2(Interactable):
             
     def select_choice(self, obj_key, key):
 
-        pass
-
+        if key == "leave":
+            self.kill()
+            self.master.level.object_hitboxes.remove(self.hitbox)
+            self.master.game.look_next_pilot(3)
 
 
 class OreDeposit(Interactable):
@@ -304,4 +311,51 @@ class TreeWithStuff(Interactable):
                 self.ore_obj.gid = self.master.level.data.map_gid(11+self.master.level.object_firstgid)[0][0]
 
 
+class DeadBody(Interactable):
 
+    def __init__(self, master, grps, image, pos, flipped=False, interactable=False, inventory=None):
+
+        super().__init__(master, grps, "dead body")
+        self.master = master
+        self.screen = pygame.display.get_surface()
+        self.image = image
+        self.rect = self.image.get_rect(midbottom=pos)
+        self.hitbox = self.rect
+        if flipped:
+            self.image = pygame.transform.flip(self.image, True, False)
+
+        self.interactable = interactable
+        if self.interactable:
+
+            self.interaction_text_dict = DEAD_BODY_INTERACTION_TEXT
+            self.interactives = [
+                ["dead body", (0, 0, self.rect.width, self.rect.height)],
+            ]
+
+            for i, (_, rect) in enumerate(self.interactives):
+                self.interactives[i][1] = rect[0]+self.rect.x, rect[1]+self.rect.y, rect[2], rect[3]
+
+            self.inventory = inventory.copy()
+            self.looted = False
+
+    def interaction_logic_check(self, obj_key, key, checks):
+
+        if key == "init":
+            if not self.inventory:
+                self.looted = True
+                return checks[2]
+            elif self.looted:
+                return checks[0]
+            else: return checks[1]
+            
+    def select_choice(self, obj_key, key):
+
+        if key == "loot it":
+            self.looted = True
+            for key, amount in self.inventory.items():
+                old_amount = self.master.player.inventory.get(key, 0)
+                self.master.player.inventory[key] = old_amount+amount
+
+    def draw(self):
+
+        self.screen.blit(self.image, self.rect.topleft+self.master.offset)

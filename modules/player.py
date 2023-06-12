@@ -4,6 +4,7 @@ from .engine import *
 from .config import *
 from .objects import objects_hitboxes
 from .entity import *
+from .objects import DeadBody
 from math import sin, cos, pi, radians, degrees
 
 MATERIAL_SPRITE = {}
@@ -59,8 +60,10 @@ class Player(pygame.sprite.Sprite):
 
         self.health = 5
         self.max_health = 5
+        self.invinsible = False
+        self.hurting = False
+        self.dying = False
 
-        # self.inventory = {"copper":1, "gold":2, "titanium":3, "diamond":4, "rubber":5, "uranium":6, "fruit":7, "vegetable":8, "wood":9}
         self.inventory = {}
         self.inventory_open = False
 
@@ -72,12 +75,17 @@ class Player(pygame.sprite.Sprite):
         self.attack_cooldown = CustomTimer()
         self.attack_for = CustomTimer()
 
+        self.invinsibility_timer = CustomTimer()
+        self.hurt_for = CustomTimer()
+
     def add_inventory(self, item):
 
         amount = self.inventory.get(item, 0)
         self.inventory[item] = amount+1
 
     def update_image(self):
+
+        if self.dying: return
 
         state = []
         if self.attacking: state.append("shoot")
@@ -107,10 +115,16 @@ class Player(pygame.sprite.Sprite):
 
         self.anim_index += self.anim_speed *self.master.dt
 
+        self.image = image.copy()
         if state.endswith("side"):
-            self.image = pygame.transform.flip(image, self.facing_direc.x<0, False)
-        else: self.image = image
+            self.image = pygame.transform.flip(self.image, self.facing_direc.x<0, False)
         self.rect.midbottom = self.hitbox.midbottom
+
+        if self.invinsible:
+            self.image.fill((255, 255, 255), special_flags=pygame.BLEND_RGB_MAX)
+            if self.hurting:
+                self.image.fill((255, 0, 0), special_flags=pygame.BLEND_RGB_MIN)
+            self.image.set_alpha(int((sin(pygame.time.get_ticks()/30)+1)/2 *255))
 
     def get_input(self):
 
@@ -165,6 +179,8 @@ class Player(pygame.sprite.Sprite):
         if self.in_control and not self.inventory_open:
             for event in pygame.event.get((pygame.KEYUP, pygame.KEYDOWN)):
                 if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_h:
+                        self.get_hurt(1)
                     if event.key == pygame.K_ESCAPE:
                         self.master.game.pause_game()
                     if event.key in (pygame.K_e, pygame.K_SPACE):
@@ -176,13 +192,18 @@ class Player(pygame.sprite.Sprite):
                         self.attack_cooldown.start(500)
                         self.attack_for.start(200)
                         self.master.level.shoot_projectile("player_small", self)
-        elif self.inventory_open:
+        elif self.inventory_open or self.hurting:
             pygame.event.clear((pygame.KEYUP, pygame.KEYDOWN))
 
         if self.attack_cooldown.check():
             self.can_attack = True
         if self.attack_for.check():
             self.attacking = False
+            self.in_control = True
+        if self.invinsibility_timer.check():
+            self.invinsible = False
+        if self.hurt_for.check():
+            self.hurting = False
             self.in_control = True
 
     def change_pilot(self, which_pilot):
@@ -194,12 +215,40 @@ class Player(pygame.sprite.Sprite):
         self.in_control = True
         self.attacking = False
         self.can_attack = True
+        self.dying = False
+        self.hurting = False
+        self.invinsible = False
 
         self.attack_cooldown.stop()
         self.attack_for.stop()
+        self.invinsibility_timer.stop()
+        self.hurt_for.stop()
 
         #make dead body if neded
         self.inventory.clear()
+
+    def die(self):
+
+        self.dying = True
+        self.anim_index = 0
+        DeadBody(self.master, [self.master.level.obj_grp, self.master.game.camera.draw_sprite_grp],
+                 self.animations["dead"][0], self.hitbox.midbottom, self.facing_direc.x<0, True, self.inventory)
+        self.master.game.look_next_pilot(self.master.game.which_pilot+1)
+
+    def get_hurt(self, damage):
+
+        if self.invinsible or self.dying: return
+        self.health -= damage
+        self.moving = False
+        self.hurting = True
+        self.invinsible = True
+        self.in_control = False
+        self.velocity.update()
+        self.hurt_for.start(200)
+        self.invinsibility_timer.start(1_000)
+
+        if self.health <= 0:
+            self.die()
 
     def draw_inventory(self):
 
@@ -238,6 +287,7 @@ class Player(pygame.sprite.Sprite):
 
     def draw(self):
 
+        if self.dying: return
         self.screen.blit(self.image, self.rect.topleft + self.master.offset)
         # pygame.draw.rect(self.screen, "blue", (self.hitbox.x+self.master.offset.x, self.hitbox.y+self.master.offset.y, self.hitbox.width, self.hitbox.height), 1)
 
