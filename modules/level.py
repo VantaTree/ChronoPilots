@@ -193,7 +193,7 @@ class Level:
 
             self.maroon_overlay.set_alpha(self.current_time_alpha)
             self.screen.blit(self.maroon_overlay, (0, 0))
-            self.master.debug("day:", self.current_time_alpha)
+            # self.master.debug("day:", self.current_time_alpha)
 
         if self.player.inventory_open:
             self.player.draw_inventory()            

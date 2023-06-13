@@ -58,7 +58,6 @@ class Player(pygame.sprite.Sprite):
         self.input_direc = pygame.Vector2()
         self.max_speed = 1.8
         self.inventory_speed = 0.5
-        self.max_speed = 5
         self.acceleration = 0.3
         self.deceleration = 0.3
         self.facing_direc = pygame.Vector2(0, 1)
@@ -113,7 +112,7 @@ class Player(pygame.sprite.Sprite):
             state.append("_side")
 
         state = "".join(state)
-        self.master.debug("state: ", state)
+        # self.master.debug("state: ", state)
 
         try:
             image = self.animations[state][int(self.anim_index)]
@@ -191,11 +190,11 @@ class Player(pygame.sprite.Sprite):
         if self.in_control and not self.inventory_open:
             for event in pygame.event.get((pygame.KEYUP, pygame.KEYDOWN)):
                 if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_h:
-                        self.get_hurt(1)
+                    # if event.key == pygame.K_h:
+                    #     self.get_hurt(1)
                     if event.key == pygame.K_ESCAPE:
                         self.master.game.pause_game()
-                    if event.key in pygame.K_e:
+                    if event.key == pygame.K_e:
                         self.master.interaction_manager.pressed_interact()
                     if event.key == pygame.K_SPACE and self.in_control and self.can_attack:
                         self.attacking = True
@@ -322,5 +321,5 @@ class Player(pygame.sprite.Sprite):
         self.move()
         self.update_image()
 
-        self.master.debug("pos: ", (round(self.hitbox.centerx, 2), round(self.hitbox.bottom, 2)))
+        # self.master.debug("pos: ", (round(self.hitbox.centerx, 2), round(self.hitbox.bottom, 2)))
 

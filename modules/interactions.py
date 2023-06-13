@@ -98,7 +98,7 @@ class DialogueObject:
     def draw(self):
 
         if self.in_multi_choice:
-            self.master.debug("mc:", (self.multi_c_index, self.the_text[self.key][self.page_index]))
+            # self.master.debug("mc:", (self.multi_c_index, self.the_text[self.key][self.page_index]))
             
             for i, choice in enumerate(self.the_text[self.key][self.page_index][::-1]):
                 text_surf = self.master.font_1.render(choice, False, (255, 255, 255))
