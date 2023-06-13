@@ -66,7 +66,7 @@ class Player(pygame.sprite.Sprite):
         self.moving = False
         self.in_control = True
         self.attacking = False
-        self.can_attack = True
+        self.can_attack = False
 
         self.health = 5
         self.max_health = 5
@@ -203,7 +203,11 @@ class Player(pygame.sprite.Sprite):
                         self.can_attack = False
                         self.attack_cooldown.start(500)
                         self.attack_for.start(200)
-                        self.master.level.shoot_projectile("player_small", self)
+                        self.master.sounds.play("SFX_Weapon", (1, 4))
+                        if self.weapon_upgraded:
+                            proj = "player_small"
+                        else: proj = "player_mini"
+                        self.master.level.shoot_projectile(proj, self)
         elif self.inventory_open or self.hurting:
             pygame.event.clear((pygame.KEYUP, pygame.KEYDOWN))
 
@@ -250,6 +254,7 @@ class Player(pygame.sprite.Sprite):
         DeadBody(self.master, [self.master.level.obj_grp, self.master.game.camera.draw_sprite_grp],
                  self.animations["dead"][0], self.hitbox.midbottom, self.facing_direc.x>0, True, self.inventory, self.has_final_resource, self.weapon_upgraded)
         self.master.game.look_next_pilot(self.master.game.which_pilot+1)
+        self.master.sounds["SFX_Death"].play()
 
     def get_hurt(self, damage):
 
@@ -265,6 +270,8 @@ class Player(pygame.sprite.Sprite):
 
         if self.health <= 0:
             self.die()
+        else:
+            self.master.sounds["SFX_DamageReceived"].play()
 
     def draw_inventory(self):
 

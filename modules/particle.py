@@ -24,6 +24,7 @@ class ParticleManager:
     def player_footsteps(self):
 
         if self.player_footstep_timer.check() and self.master.player.moving:
+            if choice([1, 0]): self.master.sounds.play("SFX_Footstep", (1, 10))
             for _ in range(2):
                 offset = (uniform(-5.0, 5.0), uniform(-5.0, 5.0)-3)
                 pos = self.master.player.hitbox.centerx + offset[0], self.master.player.hitbox.bottom + offset[1]

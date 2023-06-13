@@ -111,7 +111,9 @@ class Level:
     def shoot_projectile(self, key, obj):
 
         if key == "player_small":
-            Projectile(self.master, [self.master.camera.draw_sprite_grp, self.projectile_grp], "projectile_small", obj.rect.center, obj.facing_direc.copy())
+            Projectile(self.master, [self.master.camera.draw_sprite_grp, self.projectile_grp], "projectile_small", obj.rect.center, obj.facing_direc.copy(), damage=1)
+        if key == "player_mini":
+            Projectile(self.master, [self.master.camera.draw_sprite_grp, self.projectile_grp], "projectile_small", obj.rect.center, obj.facing_direc.copy(), damage=2)
 
     def change_pilot(self, which_pilot):
 

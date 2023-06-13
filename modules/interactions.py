@@ -28,6 +28,7 @@ class InteractionManager:
 
     def pressed_interact(self):
         if self.active is not None:
+            self.master.sounds["UI_Select"].play()
             self.active[1].interacted(self.active[0])
 
     def update(self):
@@ -118,7 +119,8 @@ class DialogueObject:
         for event in pygame.event.get((pygame.KEYDOWN)):
 
             if event.type == pygame.KEYDOWN:
-                if event.key in (pygame.K_e, pygame.K_SPACE):
+                if event.key in (pygame.K_e,):
+                    self.master.sounds["UI_Select"].play()
                     if self.in_multi_choice:
                         pass
                         self.key = self.the_text[self.key][self.page_index][self.multi_c_index]
@@ -138,18 +140,22 @@ class DialogueObject:
 
                     else:
                         self.full_line_shown = True
+
                 if self.in_multi_choice:
                     if event.key in (pygame.K_s, pygame.K_DOWN):
+                        self.master.sounds["UI_Hover"].play()
                         self.multi_c_index -= 1
                         if self.multi_c_index < 0:
                             self.multi_c_index = len(self.the_text[self.key][self.page_index])-1
                     if event.key in (pygame.K_w, pygame.K_UP):
+                        self.master.sounds["UI_Hover"].play()
                         self.multi_c_index += 1
                         if self.multi_c_index >= len(self.the_text[self.key][self.page_index]):
                             self.multi_c_index = 0
 
         if self.letter_increment_timer.check() and not self.full_line_shown and not self.in_multi_choice:
             self.letter_index += 1
+            self.master.sounds["SFX_Text"].play()
             if self.letter_index == len(self.the_text[self.key][self.page_index]):
                 self.letter_index = 0
                 self.full_line_shown = True

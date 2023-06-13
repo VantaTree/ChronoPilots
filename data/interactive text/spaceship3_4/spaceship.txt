@@ -9,12 +9,12 @@ Congratulations, you have found retrieved the rare exotic resource.
 Would you like you leave and become a HERO?
 (
     I'll wait
-    beocme the hero
+    become the hero
 )
 
 $I'll wait
 
-$become a hero
+$become the hero
 
 $no res
 Would you like to craft something to help with your mission?

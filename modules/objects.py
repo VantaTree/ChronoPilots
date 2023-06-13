@@ -154,12 +154,14 @@ class SpaceShip1(Interactable):
                 return checks[0]
             elif not self.repaired:
                 if p.inventory.get("titanium", 0)>=4 and p.inventory.get("rubber", 0)>=1:
+                    self.master.sounds.play("SFX_ObjectiveComplete", (1, 2))
                     p.inventory["titanium"] -= 4
                     p.inventory["rubber"] -= 1
                     self.repaired = True
                     return checks[2]
                 else: return checks[1]
             elif p.inventory.get("fruit", 0)>=1 and p.inventory.get("vegetable", 0)>=1:
+                self.master.sounds.play("SFX_ObjectiveComplete", (1, 2))
                 p.inventory["vegetable"] -= 1
                 p.inventory["fruit"] -= 1
                 return checks[3]
@@ -169,12 +171,14 @@ class SpaceShip1(Interactable):
 
         if obj_key != "spaceship":
             if key == "salvage":
+                self.master.sounds["SFX_ResourceCollectionRare"].play()
                 self.salvaged = True
                 self.master.player.add_inventory("copper", 2)
                 self.master.player.add_inventory("uranium", 1)
             return
 
         if key == "get me out of here":
+            self.master.sounds["SFX_MissionComplete"].play()
             self.kill()
             self.master.level.object_hitboxes.remove(self.hitbox)
             self.master.game.look_next_pilot(2)
@@ -232,6 +236,7 @@ class SpaceShip2(Interactable):
                 p.inventory["fruit"] -= 1
                 p.inventory["vegetable"] -= 1
                 self.edibles_deposited = True
+                self.master.sounds["SFX_ResourceDeposit"].play()
                 return checks[1]
             else: return checks[0]
         else: return checks[2]
@@ -241,6 +246,7 @@ class SpaceShip2(Interactable):
 
         if obj_key != "spaceship":
             if key == "salvage":
+                self.master.sounds["SFX_ResourceCollectionRare"].play()
                 self.salvaged = True
                 self.master.player.add_inventory("fruit", 1)
                 self.master.player.add_inventory("vegetable", 1)
@@ -248,6 +254,7 @@ class SpaceShip2(Interactable):
             return
 
         if key == "leave":
+            self.master.sounds["SFX_MissionComplete"].play()
             self.kill()
             self.master.level.object_hitboxes.remove(self.hitbox)
             self.master.game.look_next_pilot(3)
@@ -306,6 +313,7 @@ class SpaceShip3(Interactable):
                 p.inventory["vegetable"] -= 1
                 p.inventory["fruit"] -= 1
                 p.health += 1
+                self.master.sounds.play("SFX_ObjectiveComplete", (1, 2))
                 return checks[1]
             else: return checks[2]
         elif key == "upgrade weapon":
@@ -319,6 +327,7 @@ class SpaceShip3(Interactable):
                 p.inventory["uranium"] -= 3
                 p.inventory["gold"] -= 1
                 p.weapon_upgraded = True
+                self.master.sounds.play("SFX_ObjectiveComplete", (1, 2))
                 return checks[1]
             else: return checks[2]
 
@@ -327,16 +336,18 @@ class SpaceShip3(Interactable):
 
         if obj_key != "spaceship":
             if key == "salvage":
+                self.master.sounds["SFX_ResourceCollectionRare"].play()
                 self.salvaged = True
                 self.master.player.add_inventory("titanium", 2)
                 self.master.player.add_inventory("gold", 1)
                 self.master.player.add_inventory("uranium", 1)
             return
 
-        if key == "leave":
+        if key == "become the hero":
+            self.master.sounds["SFX_MissionComplete"].play()
             self.kill()
             self.master.level.object_hitboxes.remove(self.hitbox)
-            self.master.game.look_next_pilot(4)
+            self.master.game.look_next_pilot(5)
 
 
 class SpaceShip4(SpaceShip3):
@@ -347,7 +358,7 @@ class SpaceShip4(SpaceShip3):
 
     def change_pilot(self, which_pilot): pass
 
-    def select_choice(self, obj_key, key): pass
+    # def select_choice(self, obj_key, key): pass
 
 
 class OreDeposit(Interactable):
@@ -385,6 +396,7 @@ class OreDeposit(Interactable):
     def select_choice(self, obj_key, key):
 
         if key == "mine" or key == "mine them anyway":
+            self.master.sounds["SFX_ResourceCollection"].play()
             self.ore_amount -= 1
             self.master.player.add_inventory(self.ore_type)
             if self.ore_amount == 0:
@@ -428,6 +440,7 @@ class TreeWithStuff(Interactable):
     def select_choice(self, obj_key, key):
 
         if key == "pluck" or key == "get them anyway":
+            self.master.sounds["SFX_ResourceCollection"].play()
             self.stuff_amount -= 1
             self.master.player.add_inventory(self.stuff_type)
             if self.stuff_amount == 0:
@@ -467,7 +480,7 @@ class DeadBody(Interactable):
     def interaction_logic_check(self, obj_key, key, checks):
 
         if key == "init":
-            if not self.inventory:
+            if not self.inventory and not self.has_final_resource and not self.weapon_upgraded:
                 self.looted = True
                 return checks[2]
             elif self.looted:
@@ -477,6 +490,7 @@ class DeadBody(Interactable):
     def select_choice(self, obj_key, key):
 
         if key == "loot it":
+            self.master.sounds["SFX_ResourceCollectionRare"].play()
             self.looted = True
             for key, amount in self.inventory.items():
                 old_amount = self.master.player.inventory.get(key, 0)

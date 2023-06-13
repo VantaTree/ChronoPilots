@@ -44,7 +44,8 @@ CUTSCENE_TEXT = {
         "O god of the cosmos save me, do something"
     ],
     "end won":[
-        "yay you won"
+        "...",
+        "All hail the Entity."
     ],
     "end lost":[
         "DOOMED",
@@ -94,6 +95,7 @@ class FiFo:
         for event in pygame.event.get(pygame.KEYDOWN):
             if event.type == pygame.KEYDOWN: 
                 if event.key == pygame.K_SPACE and self.halt:
+                    self.master.sounds["UI_Hover"].play()
                     if not self.full_text_shown:
                         self.full_text_shown = True
                     else:
@@ -122,8 +124,9 @@ class FiFo:
 
     def update(self):
 
-        if self.type != "transition" and self.letter_increment_timer.check() and self.halt:
+        if self.type != "transition" and self.letter_increment_timer.check() and self.halt and not self.full_text_shown:
             self.letter_index += 1
+            self.master.sounds["SFX_Text"].play()
             if self.letter_index == len(self.texts[self.page_index]):
                 self.full_text_shown = True
 
@@ -152,5 +155,7 @@ class FiFo:
         if self.skip: return True
         result = self.update()
         self.draw()
+        if result:
+            self.master.sounds["SFX_Spawn"].play()
         return result
     

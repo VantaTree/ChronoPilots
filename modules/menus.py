@@ -84,7 +84,7 @@ class MainMenu():
                     action = button.interact(event.pos, click=True)
                     if action == 'start':
                         # self.master.music.change_track("in_game")
-                        self.master.sounds["SFX_Spawn"].play()
+                        self.master.sounds["UI_Select"].play()
                         self.master.app.state = self.master.app.INTRO_CUTSCENE
                     elif action == 'fullscreen':
                         pygame.display.toggle_fullscreen()
