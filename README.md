@@ -1,3 +1,3 @@
-# Lost in Dimensions
+# Chrono Pilots
 
-game entry for the [Interstellar Game Jam-4](https://itch.io/jam/interstellar-game-jam-4)
+game entry for the [Interstellar Game Jam-5](https://itch.io/jam/interstellar-game-jam-5)
