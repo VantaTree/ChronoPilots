@@ -195,7 +195,7 @@ class Player(pygame.sprite.Sprite):
                         self.get_hurt(1)
                     if event.key == pygame.K_ESCAPE:
                         self.master.game.pause_game()
-                    if event.key in (pygame.K_e, pygame.K_SPACE):
+                    if event.key in pygame.K_e:
                         self.master.interaction_manager.pressed_interact()
                     if event.key == pygame.K_SPACE and self.in_control and self.can_attack:
                         self.attacking = True

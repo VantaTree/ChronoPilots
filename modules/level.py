@@ -2,7 +2,7 @@ import pygame
 from .engine import *
 from .config import *
 from .objects import SpaceShip1, OreDeposit, TreeWithStuff, SpaceShip2, SpaceShip3, SpaceShip4, Door
-from .enemies import Enemy
+from .enemies import Enemy, Squid
 from .projectile import Projectile
 from pytmx.util_pygame import load_pygame
 from math import sin, pi
@@ -70,6 +70,8 @@ class Level:
         elif id in (18, 19):
             dog = ["dog1", "dog2"][id-18]
             Enemy(self.master, [self.master.camera.draw_sprite_grp, self.enemy_grp], (ore_obj.x, ore_obj.y), dog, self.map_type)
+        elif id == 20:
+            Squid(self.master, [self.master.camera.draw_sprite_grp, self.enemy_grp], (ore_obj.x, ore_obj.y), self.map_type)
 
     def get_tile_layers(self):
 
@@ -84,7 +86,7 @@ class Level:
                 print(self.data.tiledgidmap[obj.gid]-2147483648, "is flipped")
                 continue
             id = self.data.tiledgidmap[obj.gid]-self.object_firstgid+1
-            if id in (18, 19):
+            if id in (18, 19, 20):
                 self.create_lvl_object(id, obj)
                 continue
             pos = int(obj.x//CHUNK), int(obj.y//CHUNK)
