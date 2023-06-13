@@ -37,8 +37,8 @@ class App:
         pygame.init()
         self.screen = pygame.display.set_mode((W, H), pygame.SCALED)
         pygame.display.set_caption("Chrono Pilots")
-        # icon = pygame.image.load("graphics/icon.png").convert()
-        # pygame.display.set_icon(icon)
+        icon = pygame.image.load("graphics/other/cover.png").convert()
+        pygame.display.set_icon(icon)
         self.clock = pygame.time.Clock()
 
         self.state = self.MAIN_MENU
