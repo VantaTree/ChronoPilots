@@ -54,9 +54,10 @@ class Level:
 
     def create_lvl_object(self, id, ore_obj):
 
-        if (1 < id <= 6):
+        if (1 < id <= 6) or id == 17:
             l = [None, None, "copper", "diamond", "gold", "titanium", "uranium"]
-            OreDeposit(self.master, [self.obj_grp], l[id], ore_obj, 3)
+            c = l[id] if id != 17 else "final"
+            OreDeposit(self.master, [self.obj_grp], c, ore_obj, 3)
         elif id in (14, 15, 16):
             if id == 14:
                 stuff = "fruit"

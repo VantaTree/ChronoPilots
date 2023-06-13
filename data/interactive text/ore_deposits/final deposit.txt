@@ -1,0 +1,7 @@
+$init
+[
+    final wala
+]
+
+$final wala
+You got the Most valuable resource.

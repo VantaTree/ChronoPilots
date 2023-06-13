@@ -60,7 +60,8 @@ objects_hitboxes = [
     (0, 0, 8, 7),
     (0, 0, 8, 7),
     (0, 0, 8, 7),
-    (0, 0, 8, 7)
+    (0, 0, 8, 7),
+    (0, 0, 13, 7),
 ]
 
 ORE_INTERACTION = load_interaction_text("ore_deposits")
@@ -380,6 +381,14 @@ class OreDeposit(Interactable):
             self.interactives[i][1] = rect[0]+self.rect.x, rect[1]+self.rect.y, rect[2], rect[3]
 
     def interaction_logic_check(self, obj_key, key, checks):
+
+        if obj_key == "final deposit":
+            self.master.sounds["SFX_ResourceCollectionRare"].play()
+            self.master.player.has_final_resource = True
+            self.kill()
+            self.interactives.clear()
+            self.ore_obj.gid = self.master.level.data.map_gid(0+self.master.level.object_firstgid)[0][0]
+            return checks[0]
 
         if key == "init":
             if self.master.game.which_pilot == 1:

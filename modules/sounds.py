@@ -32,7 +32,7 @@ class SoundSet:
         self.dict["SFX_ResourceCollectionRare"].set_volume(0.5)
         self.dict["SFX_ObjectiveComplete1"].set_volume(0.5)
         self.dict["SFX_ObjectiveComplete2"].set_volume(0.5)
-        self.dict["SFX_MisisonComplete"].set_volume(0.5)
+        self.dict["SFX_MissionComplete"].set_volume(0.5)
 
         self.dict["SFX_CreatureAttack"].set_volume(0.5)
         self.dict["SFX_CreatureDamage1"].set_volume(0.5)
