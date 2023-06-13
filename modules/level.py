@@ -67,6 +67,9 @@ class Level:
                 stuff = "rubber"
 
             TreeWithStuff(self.master, [self.obj_grp], stuff, ore_obj, 1)
+        elif id in (18, 19):
+            dog = ["dog1", "dog2"][id-18]
+            Enemy(self.master, [self.master.camera.draw_sprite_grp, self.enemy_grp], (ore_obj.x, ore_obj.y), dog, self.map_type)
 
     def get_tile_layers(self):
 
@@ -80,12 +83,16 @@ class Level:
             if obj.image is None:
                 print(self.data.tiledgidmap[obj.gid]-2147483648, "is flipped")
                 continue
+            id = self.data.tiledgidmap[obj.gid]-self.object_firstgid+1
+            if id in (18, 19):
+                self.create_lvl_object(id, obj)
+                continue
             pos = int(obj.x//CHUNK), int(obj.y//CHUNK)
             chunk_list = self.object_chunk.get(pos)
             if chunk_list is None:
                 self.object_chunk[(pos)] = [obj,]
                 continue
-            self.create_lvl_object(self.data.tiledgidmap[obj.gid]-self.object_firstgid+1, obj)
+            self.create_lvl_object(id, obj)
             chunk_list.append(obj)
 
     def init_overworld(self):
@@ -93,7 +100,7 @@ class Level:
         SpaceShip1(self.master, [self.master.camera.draw_sprite_grp, self.obj_grp], (3024, 1169), self.object_hitboxes)
         self.spawn_rect.center = (3024, 1169)
         Door(self.master, [self.obj_grp], "cave")
-        Enemy(self.master, [self.master.camera.draw_sprite_grp, self.enemy_grp], (688, 232), "test")
+        # Enemy(self.master, [self.master.camera.draw_sprite_grp, self.enemy_grp], (3024, 1169+200), "dog1", "terrain")
 
         self.maroon_overlay = pygame.Surface(self.screen.get_size())
         self.maroon_overlay.fill(0x4C4A93)
@@ -106,7 +113,7 @@ class Level:
 
     def init_cave(self):
         
-        Enemy(self.master, [self.master.camera.draw_sprite_grp, self.enemy_grp], (3*16, 6*16), "test")
+        Enemy(self.master, [self.master.camera.draw_sprite_grp, self.enemy_grp], (3*16, 6*16), "test", "cave")
         Door(self.master, [self.obj_grp], "terrain")
 
     def shoot_projectile(self, key, obj):
@@ -156,12 +163,12 @@ class Level:
                     self.screen.blit(image, (x*TILESIZE + self.master.offset.x, y*TILESIZE + self.master.offset.y - image.get_height() + TILESIZE))
 
 
-        for y in range(self.size[1]):
-            for x in range(self.size[0]):
+        # for y in range(self.size[1]):
+        #     for x in range(self.size[0]):
 
-                if not self.collision[y][x]: continue
+        #         if not self.collision[y][x]: continue
 
-                pygame.draw.rect(self.screen, "green", (x*16+self.master.offset.x, y*16+self.master.offset.y, 16, 16), 1)
+        #         pygame.draw.rect(self.screen, "green", (x*16+self.master.offset.x, y*16+self.master.offset.y, 16, 16), 1)
 
     def draw_fg(self):
 

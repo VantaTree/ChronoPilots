@@ -58,7 +58,7 @@ class Player(pygame.sprite.Sprite):
         self.input_direc = pygame.Vector2()
         self.max_speed = 1.8
         self.inventory_speed = 0.5
-        # self.max_speed = 5
+        self.max_speed = 5
         self.acceleration = 0.3
         self.deceleration = 0.3
         self.facing_direc = pygame.Vector2(0, 1)

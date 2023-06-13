@@ -13,7 +13,7 @@ def load_enemy_sprites():
 
     global ENEMY_SPRITES
 
-    for folder in ("test",):
+    for folder in ("test", "dog1", "dog2"):
         ENEMY_SPRITES[folder] = import_sprite_sheets(F"graphics/enemies/{folder}")
 
 
@@ -26,7 +26,7 @@ DYING = 4
 
 class Enemy(pygame.sprite.Sprite):
 
-    def __init__(self, master, grps, pos, sprite_type):
+    def __init__(self, master, grps, pos, sprite_type, in_map, ranget=(8, 12)):
 
         super().__init__(grps)
         self.master = master
@@ -40,8 +40,16 @@ class Enemy(pygame.sprite.Sprite):
 
         self.anim_index = 0
         self.anim_speed = 0.15
+        
+        self.in_map = in_map
+        self.attack_rect_dimen = (4, 21, 11, 11)
+        self.attack_rect = pygame.FRect(4, 21, 11, 11)
 
-        self.hitbox = pygame.FRect(0, 0, 13, 12)
+        if sprite_type == "test":
+            size = 13, 12
+        elif "dog" in sprite_type:
+            size = (12, 6)
+        self.hitbox = pygame.FRect(0, 0, size[0], size[1])
         self.hitbox.midbottom = pos
         self.velocity = pygame.Vector2()
         self.target_direc = pygame.Vector2()
@@ -63,14 +71,16 @@ class Enemy(pygame.sprite.Sprite):
         self.invinsibility_timer = CustomTimer()
         self.hurt_for = CustomTimer()
 
-        self.follow_timer.start(10_000, 0)
+        self.start_this_timer = CustomTimer()
+        self.start_this_timer.start(randint(10, 20) *1000)
+        self.ranget = ranget
 
     def update_image(self):
 
         state = []
         if self.state == DYING: state.append("dead")
         elif self.moving: state.append("run")
-        elif self.state == AGRO: state.append("agro")
+        # elif self.state == AGRO: state.append("agro")
         elif self.state == ATTACK: state.append("attack")
         else: state.append("idle")
 
@@ -84,7 +94,7 @@ class Enemy(pygame.sprite.Sprite):
             if self.state == ATTACK:
                 self.state = AGRO
             elif self.state == DYING:
-                DeadBody(self.master, [self.master.game.camera.draw_sprite_grp], self.animations[state][-1], self.rect.midbottom, self.facing_direc.x<0)
+                DeadBody(self.master, [self.master.game.camera.draw_sprite_grp], self.animations["dead"][0], self.rect.midbottom, self.facing_direc.x<0)
                 self.kill()
                 return
 
@@ -94,7 +104,8 @@ class Enemy(pygame.sprite.Sprite):
 
         self.anim_index += self.anim_speed *self.master.dt
 
-        self.image = pygame.transform.flip(image, self.facing_direc.x<0, False)
+        flip = self.facing_direc.x<0 if self.sprite_type in ("test",) else self.facing_direc.x>=0
+        self.image = pygame.transform.flip(image, flip, False)
         self.rect = self.image.get_rect(midbottom = self.hitbox.midbottom)
 
         if self.invinsible:
@@ -141,6 +152,16 @@ class Enemy(pygame.sprite.Sprite):
                 self.anim_index = 0
                 self.target_direc.update()
 
+        if self.state == ATTACK:
+            self.attack_rect.x = self.attack_rect_dimen[0] + self.rect.x
+            self.attack_rect.y = self.attack_rect_dimen[1] + self.rect.y
+            if self.facing_direc.x>=0:
+                self.attack_rect.right = self.rect.width - self.attack_rect_dimen[0] + self.rect.x
+
+            if self.attack_rect.colliderect(self.master.player.hitbox):
+                self.master.player.get_hurt(1)
+
+
     def get_hurt(self, damage):
 
         if self.invinsible or self.state == DYING: return
@@ -175,6 +196,8 @@ class Enemy(pygame.sprite.Sprite):
             self.invinsible = False
         if self.hurt_for.check():
             self.hurting = False
+        if self.start_this_timer.check():
+            self.follow_timer.start(randint(*self.ranget)*1000, 0)
 
     def move(self):
 
@@ -186,8 +209,11 @@ class Enemy(pygame.sprite.Sprite):
 
     def draw(self):
 
-        self.screen.blit(self.image, self.rect.topleft + self.master.offset)
-        # pygame.draw.rect(self.screen, "blue", (self.hitbox.x+self.master.offset.x, self.hitbox.y+self.master.offset.y, self.hitbox.width, self.hitbox.height), 1)
+        if self.in_map == self.master.level.map_type:
+
+            self.screen.blit(self.image, self.rect.topleft + self.master.offset)
+            # pygame.draw.rect(self.screen, "blue", (self.hitbox.x+self.master.offset.x, self.hitbox.y+self.master.offset.y, self.hitbox.width, self.hitbox.height), 1)
+            # pygame.draw.rect(self.screen, "blue", (self.attack_rect.x+self.master.offset.x, self.attack_rect.y+self.master.offset.y, self.attack_rect.width, self.attack_rect.height), 1)
 
     def update(self):
 
@@ -197,5 +223,4 @@ class Enemy(pygame.sprite.Sprite):
         self.apply_force()
         self.move()
         self.update_image()
-        self.master.debug("state:", self.state)
 

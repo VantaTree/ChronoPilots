@@ -97,7 +97,6 @@ class Game:
         self.master.app.state = self.master.app.TRANSITION
         self.master.app.cutscene = FiFo(self.master, "transition")
 
-
     def pause_game(self):
         if not self.paused:
             self.paused = True
