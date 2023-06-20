@@ -7,7 +7,7 @@ class Master:
     def __init__(self):
 
         self.app:App
-        # self.debug:Debug
+        self.debug:Debug
         self.dt:float
         self.offset:pygame.Vector2
 
@@ -46,8 +46,8 @@ class App:
         self.master = Master()
         SoundSet(self.master)
         self.master.app = self
-        # self.debug = Debug(self.screen, font=self.master.font_d, offset=4)
-        # self.master.debug = self.debug
+        self.debug = Debug(self.screen, font=self.master.font_d, offset=4)
+        self.master.debug = self.debug
         self.game = Game(self.master)
         self.main_menu = MainMenu(self.master)
         self.cutscene = FiFo(self.master, "intro")
@@ -62,10 +62,10 @@ class App:
 
             self.master.dt = self.clock.tick(FPS) / 16.667
             if self.master.dt > 10: self.master.dt = 10
-            # self.debug("FPS:", round(self.clock.get_fps(), 2))
+            self.debug("FPS:", round(self.clock.get_fps(), 2))
             # self.debug("Offset:", (round(self.master.offset.x, 2), round(self.master.offset.y, 2)))
-            # self.debug("Music:", self.master.music.current_track)
-            # self.debug("Ambie:", self.master.ambience.current_track)
+            self.debug("Music:", self.master.music.current_track)
+            self.debug("Ambie:", self.master.ambience.current_track)
 
             for event in pygame.event.get((pygame.QUIT)):
                 
@@ -78,7 +78,7 @@ class App:
             self.master.music.run()
             self.master.ambience.run()
             self.run_states()
-            # self.debug.draw()
+            self.debug.draw()
 
     def run_states(self):
 

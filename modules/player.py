@@ -190,8 +190,8 @@ class Player(pygame.sprite.Sprite):
         if self.in_control and not self.inventory_open:
             for event in pygame.event.get((pygame.KEYUP, pygame.KEYDOWN)):
                 if event.type == pygame.KEYDOWN:
-                    # if event.key == pygame.K_h:
-                    #     self.get_hurt(1)
+                    if event.key == pygame.K_h:
+                        self.get_hurt(1)
                     if event.key == pygame.K_ESCAPE:
                         self.master.game.pause_game()
                     if event.key == pygame.K_e:
@@ -321,5 +321,5 @@ class Player(pygame.sprite.Sprite):
         self.move()
         self.update_image()
 
-        # self.master.debug("pos: ", (round(self.hitbox.centerx, 2), round(self.hitbox.bottom, 2)))
+        self.master.debug("pos: ", (round(self.hitbox.centerx, 2), round(self.hitbox.bottom, 2)))
 

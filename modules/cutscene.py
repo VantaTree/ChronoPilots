@@ -103,9 +103,9 @@ class FiFo:
                         self.halt = False
                         self.full_text_shown = False
                         self.letter_index = 0
-                # if event.key == pygame.K_ESCAPE:
-                #     self.skip = True
-                #     return
+                if event.key == pygame.K_ESCAPE:
+                    self.skip = True
+                    return
                 
     def draw(self):
         
@@ -152,7 +152,7 @@ class FiFo:
     def run(self):
 
         self.check_events()
-        # if self.skip: return True
+        if self.skip: return True
         result = self.update()
         self.draw()
         if result:
