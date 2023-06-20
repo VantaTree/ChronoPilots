@@ -1,1 +1,2 @@
-https://github.com/bitcraft/pytmx/releases/tag/v3.31
+https://github.com/bitcraft/pytmx
+(v3.32)
