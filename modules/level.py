@@ -90,12 +90,14 @@ class Level:
             if id in (18, 19, 20):
                 self.create_lvl_object(id, obj)
                 continue
+            
+            self.create_lvl_object(id, obj)
             pos = int(obj.x//CHUNK), int(obj.y//CHUNK)
             chunk_list = self.object_chunk.get(pos)
+
             if chunk_list is None:
                 self.object_chunk[(pos)] = [obj,]
                 continue
-            self.create_lvl_object(id, obj)
             chunk_list.append(obj)
 
     def init_overworld(self):

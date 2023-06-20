@@ -33,11 +33,17 @@ class Game:
         self.camera = Camera(master)
         self.camera.set_target(self.player, lambda p: p.rect.center)
         self.camera.snap_offset()
+
         self.terrain_level = Level(master, self.player, "terrain")
         self.cave_level = Level(master, self.player, "cave")
+        self.test_level = Level(master, self.player, "bug_test")
+
+        self.test_level.camera_grp.add(self.player)
         self.terrain_level.camera_grp.add(self.player)
         self.cave_level.camera_grp.add(self.player)
+
         self.level = self.terrain_level
+        # self.level = self.test_level
         self.master.level = self.level
 
         self.paused = False
