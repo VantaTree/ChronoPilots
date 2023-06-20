@@ -42,8 +42,10 @@ class Game:
         self.terrain_level.camera_grp.add(self.player)
         self.cave_level.camera_grp.add(self.player)
 
-        self.level = self.terrain_level
         # self.level = self.test_level
+        # self.player.hitbox.midbottom = (68, 100)
+        # self.player.rect.midbottom = (68, 100)
+        self.level = self.terrain_level
         self.master.level = self.level
 
         self.paused = False
