@@ -51,9 +51,9 @@ class Projectile(pygame.sprite.Sprite):
     def check_hit(self):
 
         for enemy in self.master.level.enemy_grp.sprites():
-            # if enemy is self: continue
             if enemy.rect.colliderect(self.rect):
                 enemy.get_hurt(self.damage)
+                self.kill()
 
     def check_collisoin(self):
 
