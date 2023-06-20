@@ -90,7 +90,7 @@ class Level:
             if id in (18, 19, 20):
                 self.create_lvl_object(id, obj)
                 continue
-            
+
             self.create_lvl_object(id, obj)
             pos = int(obj.x//CHUNK), int(obj.y//CHUNK)
             chunk_list = self.object_chunk.get(pos)
@@ -110,7 +110,7 @@ class Level:
         self.maroon_overlay = pygame.Surface(self.screen.get_size())
         self.maroon_overlay.fill(0x4C4A93)
         self.maroon_overlay.set_alpha(0)
-        self.night_alpha = 100
+        self.night_alpha = 128
         self.current_time_alpha = 0
         self.time_alpha_direction = 1
         self.day_progress_timer = CustomTimer()
@@ -189,14 +189,14 @@ class Level:
                 elif self.current_time_alpha == self.night_alpha:
                     self.time_alpha_direction = -1
 
-            if self.current_time_alpha < 32:
+            if self.current_time_alpha < 40:
                 self.day_progress_timer.duration = 3_500
             else:
                 self.day_progress_timer.duration = 1_000
 
             self.maroon_overlay.set_alpha(self.current_time_alpha)
             self.screen.blit(self.maroon_overlay, (0, 0))
-            # self.master.debug("day:", self.current_time_alpha)
+            self.master.debug("day:", self.current_time_alpha)
 
         if self.player.inventory_open:
             self.player.draw_inventory()            
