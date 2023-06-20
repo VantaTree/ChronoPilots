@@ -14,6 +14,41 @@ class CustomGroup(pygame.sprite.Group):
         for sprite in sorted(self.sprites(), key=key):
             sprite.draw()
 
+class AdvancedCustomGroup(CustomGroup):
+
+    def advanced_y_sort_draw(self, master):
+
+        draw_list = []
+        px1 = int(master.offset.x*-1//CHUNK) -1
+        px2 = px1 + W//CHUNK +2
+        py1 = int(master.offset.y*-1//CHUNK) -1
+        py2 = py1 + H//CHUNK +2
+
+        for y in range(py1, py2+1):
+            for x in range(px1, px2+1):
+                obj_list = master.level.object_chunk.get((x, y))
+                if obj_list is None: continue
+                draw_list.extend(obj_list)
+
+        draw_list.extend(self.sprites())
+
+        for sprite in sorted(draw_list, key=self.key):
+            try:
+                sprite.draw()
+            except Exception:
+                if sprite.image is not None: # BIG PROBLEM
+                    master.game.screen.blit(sprite.image, (int(sprite.x), int(sprite.y))+master.offset)
+                else:
+                    master.level.data.tiledgidmap[sprite.gid]
+
+    @staticmethod
+    def key(p):
+
+        try:
+            return p.rect.bottom
+        except Exception:
+            return p.y+p.height
+
 
 def import_spritesheet(folder_path, sheet_name):
     "imports a given spritesheet and places it in a list"

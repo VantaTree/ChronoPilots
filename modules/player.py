@@ -250,7 +250,7 @@ class Player(pygame.sprite.Sprite):
 
         self.dying = True
         self.anim_index = 0
-        DeadBody(self.master, [self.master.level.obj_grp, self.master.game.camera.draw_sprite_grp],
+        DeadBody(self.master, [self.master.level.obj_grp, self.master.level.camera_grp],
                  self.animations["dead"][0], self.hitbox.midbottom, self.facing_direc.x>0, True, self.inventory, self.has_final_resource, self.weapon_upgraded)
         self.master.game.look_next_pilot(self.master.game.which_pilot+1)
         self.master.sounds["SFX_Death"].play()

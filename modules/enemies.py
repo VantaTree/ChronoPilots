@@ -94,7 +94,7 @@ class Enemy(pygame.sprite.Sprite):
             if self.state == ATTACK:
                 self.state = AGRO
             elif self.state == DYING:
-                DeadBody(self.master, [self.master.game.camera.draw_sprite_grp], self.animations["dead"][0], self.rect.midbottom, self.facing_direc.x<0)
+                DeadBody(self.master, [self.master.level.camera_grp], self.animations["dead"][0], self.rect.midbottom, self.facing_direc.x<0)
                 self.kill()
                 return
 
@@ -113,7 +113,6 @@ class Enemy(pygame.sprite.Sprite):
             if self.hurting:
                 self.image.fill((255, 0, 0), special_flags=pygame.BLEND_RGB_MIN)
             self.image.set_alpha(int((sin(pygame.time.get_ticks()/30)+1)/2 *255))
-
 
     def apply_force(self):
 
@@ -216,11 +215,9 @@ class Enemy(pygame.sprite.Sprite):
 
     def draw(self):
 
-        if self.in_map == self.master.level.map_type:
-
-            self.screen.blit(self.image, self.rect.topleft + self.master.offset)
-            # pygame.draw.rect(self.screen, "blue", (self.hitbox.x+self.master.offset.x, self.hitbox.y+self.master.offset.y, self.hitbox.width, self.hitbox.height), 1)
-            # pygame.draw.rect(self.screen, "blue", (self.attack_rect.x+self.master.offset.x, self.attack_rect.y+self.master.offset.y, self.attack_rect.width, self.attack_rect.height), 1)
+        self.screen.blit(self.image, self.rect.topleft + self.master.offset)
+        # pygame.draw.rect(self.screen, "blue", (self.hitbox.x+self.master.offset.x, self.hitbox.y+self.master.offset.y, self.hitbox.width, self.hitbox.height), 1)
+        # pygame.draw.rect(self.screen, "blue", (self.attack_rect.x+self.master.offset.x, self.attack_rect.y+self.master.offset.y, self.attack_rect.width, self.attack_rect.height), 1)
 
     def update(self):
 
@@ -285,7 +282,7 @@ class Squid(pygame.sprite.Sprite):
             image = self.animations[state][0]
             self.anim_index = 0
             if self.state == DYING:
-                DeadBody(self.master, [self.master.game.camera.draw_sprite_grp], self.animations["dead"][0], self.rect.midbottom, self.facing_direc.x<0)
+                DeadBody(self.master, [self.master.level.camera_grp], self.animations["dead"][0], self.rect.midbottom, self.facing_direc.x<0)
                 self.kill()
                 return
 
@@ -303,7 +300,6 @@ class Squid(pygame.sprite.Sprite):
             if self.hurting:
                 self.image.fill((255, 0, 0), special_flags=pygame.BLEND_RGB_MIN)
             self.image.set_alpha(int((sin(pygame.time.get_ticks()/30)+1)/2 *255))
-
 
     def apply_force(self):
 
@@ -344,7 +340,6 @@ class Squid(pygame.sprite.Sprite):
 
             if self.hitbox.colliderect(self.master.player.hitbox):
                 self.master.player.get_hurt(1)
-
 
     def get_hurt(self, damage):
 
@@ -387,11 +382,9 @@ class Squid(pygame.sprite.Sprite):
 
     def draw(self):
 
-        if self.in_map == self.master.level.map_type:
-
-            self.screen.blit(self.image, self.rect.topleft + self.master.offset)
-            # pygame.draw.rect(self.screen, "blue", (self.hitbox.x+self.master.offset.x, self.hitbox.y+self.master.offset.y, self.hitbox.width, self.hitbox.height), 1)
-            # pygame.draw.rect(self.screen, "blue", (self.attack_rect.x+self.master.offset.x, self.attack_rect.y+self.master.offset.y, self.attack_rect.width, self.attack_rect.height), 1)
+        self.screen.blit(self.image, self.rect.topleft + self.master.offset)
+        # pygame.draw.rect(self.screen, "blue", (self.hitbox.x+self.master.offset.x, self.hitbox.y+self.master.offset.y, self.hitbox.width, self.hitbox.height), 1)
+        # pygame.draw.rect(self.screen, "blue", (self.attack_rect.x+self.master.offset.x, self.attack_rect.y+self.master.offset.y, self.attack_rect.width, self.attack_rect.height), 1)
 
     def update(self):
 

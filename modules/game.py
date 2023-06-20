@@ -32,10 +32,11 @@ class Game:
         self.player = Player(master, [])
         self.camera = Camera(master)
         self.camera.set_target(self.player, lambda p: p.rect.center)
-        self.camera.draw_sprite_grp.add(self.player)
         self.camera.snap_offset()
         self.terrain_level = Level(master, self.player, "terrain")
         self.cave_level = Level(master, self.player, "cave")
+        self.terrain_level.camera_grp.add(self.player)
+        self.cave_level.camera_grp.add(self.player)
         self.level = self.terrain_level
         self.master.level = self.level
 
@@ -68,7 +69,6 @@ class Game:
 
         self.master.ambience.fadeout()
         self.master.music.change_track("main_menu")
-
 
     def change_pilot(self, which_pilot):
 
@@ -150,8 +150,6 @@ class Camera:
         self.master = master
         master.camera = self
 
-        self.draw_sprite_grp = AdvancedCustomGroup()
-
         self.camera_rigidness = 0.05
 
         self.target = target
@@ -198,46 +196,9 @@ class Camera:
 
     def draw(self):
 
-        self.draw_sprite_grp.advanced_y_sort_draw(self.master)
-        # self.draw_sprite_grp.advanced_y_sort_draw(self.master)
+        self.master.level.camera_grp.advanced_y_sort_draw(self.master)
 
     def update(self):
 
         self.update_offset()
         self.clamp_offset()
-
-
-class AdvancedCustomGroup(CustomGroup):
-
-    def advanced_y_sort_draw(self, master):
-
-        draw_list = []
-        px1 = int(master.offset.x*-1//CHUNK) -1
-        px2 = px1 + W//CHUNK +2
-        py1 = int(master.offset.y*-1//CHUNK) -1
-        py2 = py1 + H//CHUNK +2
-
-        for y in range(py1, py2+1):
-            for x in range(px1, px2+1):
-                obj_list = master.level.object_chunk.get((x, y))
-                if obj_list is None: continue
-                draw_list.extend(obj_list)
-
-        draw_list.extend(self.sprites())
-
-        for sprite in sorted(draw_list, key=self.key):
-            try:
-                sprite.draw()
-            except Exception:
-                if sprite.image is not None: # BIG PROBLEM
-                    master.game.screen.blit(sprite.image, (int(sprite.x), int(sprite.y))+master.offset)
-                else:
-                    master.level.data.tiledgidmap[sprite.gid]
-
-    @staticmethod
-    def key(p):
-
-        try:
-            return p.rect.bottom
-        except Exception:
-            return p.y+p.height

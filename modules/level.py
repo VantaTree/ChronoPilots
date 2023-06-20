@@ -19,6 +19,7 @@ class Level:
         self.map_type = map_type
 
         self.object_hitboxes = []
+        self.camera_grp = AdvancedCustomGroup()
         self.obj_grp = CustomGroup()
         self.enemy_grp = CustomGroup()
         self.projectile_grp = CustomGroup()
@@ -69,9 +70,9 @@ class Level:
             TreeWithStuff(self.master, [self.obj_grp], stuff, ore_obj, 1)
         elif id in (18, 19):
             dog = ["dog1", "dog2"][id-18]
-            Enemy(self.master, [self.master.camera.draw_sprite_grp, self.enemy_grp], (ore_obj.x, ore_obj.y), dog, self.map_type)
+            Enemy(self.master, [self.camera_grp, self.enemy_grp], (ore_obj.x, ore_obj.y), dog, self.map_type)
         elif id == 20:
-            Squid(self.master, [self.master.camera.draw_sprite_grp, self.enemy_grp], (ore_obj.x, ore_obj.y), self.map_type)
+            Squid(self.master, [self.camera_grp, self.enemy_grp], (ore_obj.x, ore_obj.y), self.map_type)
 
     def get_tile_layers(self):
 
@@ -99,10 +100,10 @@ class Level:
 
     def init_overworld(self):
 
-        SpaceShip1(self.master, [self.master.camera.draw_sprite_grp, self.obj_grp], (3024, 1169), self.object_hitboxes)
+        SpaceShip1(self.master, [self.camera_grp, self.obj_grp], (3024, 1169), self.object_hitboxes)
         self.spawn_rect.center = (3024, 1169)
         Door(self.master, [self.obj_grp], "cave")
-        # Enemy(self.master, [self.master.camera.draw_sprite_grp, self.enemy_grp], (3024, 1169+200), "dog1", "terrain")
+        # Enemy(self.master, [self.camera_grp, self.enemy_grp], (3024, 1169+200), "dog1", "terrain")
 
         self.maroon_overlay = pygame.Surface(self.screen.get_size())
         self.maroon_overlay.fill(0x4C4A93)
@@ -115,27 +116,27 @@ class Level:
 
     def init_cave(self):
         
-        Enemy(self.master, [self.master.camera.draw_sprite_grp, self.enemy_grp], (3*16, 6*16), "test", "cave")
+        # Enemy(self.master, [self.camera_grp, self.enemy_grp], (3*16, 6*16), "test", "cave")
         Door(self.master, [self.obj_grp], "terrain")
 
     def shoot_projectile(self, key, obj):
 
         if key == "player_small":
-            Projectile(self.master, [self.master.camera.draw_sprite_grp, self.projectile_grp], "projectile_small", obj.rect.center, obj.facing_direc.copy(), damage=1)
+            Projectile(self.master, [self.camera_grp, self.projectile_grp], "projectile_small", obj.rect.center, obj.facing_direc.copy(), damage=1)
         if key == "player_mini":
-            Projectile(self.master, [self.master.camera.draw_sprite_grp, self.projectile_grp], "projectile_small", obj.rect.center, obj.facing_direc.copy(), damage=2)
+            Projectile(self.master, [self.camera_grp, self.projectile_grp], "projectile_small", obj.rect.center, obj.facing_direc.copy(), damage=2)
 
     def change_pilot(self, which_pilot):
 
         if self.map_type == "terrain":
             if which_pilot == 2:
-                SpaceShip2(self.master, [self.master.camera.draw_sprite_grp, self.obj_grp], (2624, 1360), self.object_hitboxes)
+                SpaceShip2(self.master, [self.camera_grp, self.obj_grp], (2624, 1360), self.object_hitboxes)
                 self.spawn_rect.center = (2624, 1360)
             if which_pilot == 3:
-                SpaceShip3(self.master, [self.master.camera.draw_sprite_grp, self.obj_grp], (1136, 320), self.object_hitboxes)
+                SpaceShip3(self.master, [self.camera_grp, self.obj_grp], (1136, 320), self.object_hitboxes)
                 self.spawn_rect.center = (1136, 320)
             if which_pilot == 4:
-                SpaceShip4(self.master, [self.master.camera.draw_sprite_grp, self.obj_grp], (342, 1300), self.object_hitboxes)
+                SpaceShip4(self.master, [self.camera_grp, self.obj_grp], (342, 1300), self.object_hitboxes)
                 self.spawn_rect.center = (342, 1300)
 
         for obj in self.obj_grp.sprites():
