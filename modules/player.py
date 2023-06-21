@@ -74,6 +74,7 @@ class Player(pygame.sprite.Sprite):
         self.dying = False
 
         self.inventory = {}
+        # self.inventory = {"uranium":1, "titanium":2, "copper":3, "gold":4, "diamond":5, "wood":6, "rubber":7, "fruit":8, "vegetable":9}
         self.inventory_open = False
         self.has_final_resource = False
         self.weapon_upgraded = False
@@ -278,25 +279,25 @@ class Player(pygame.sprite.Sprite):
         self.screen.blit(self.master.game.black_overlay, (0, 0))
         self.screen.blit(pygame.transform.gaussian_blur(self.screen, 5, False), (0, 0))
 
-        widx, widy = 50, 50
-        grid = 3
         mat_size = 16
+        padd = 12
+        gridx, gridy = 4, 3
+
+        widx = mat_size*gridx + padd*(gridx-1)
+        widy = mat_size*gridy + padd*(gridy-1)
 
         offx = (W-widx)/2
         offy = (H-widy)/2
 
-        paddx = widx/grid+mat_size
-        paddy = widy/grid+mat_size
-
         for i, (key, amount) in enumerate(self.inventory.items()):
             if amount == 0: continue
-            y, x = divmod(i, grid)
-            pos = x*paddx+offx-(mat_size/1), y*paddy+offy-(mat_size/1)
+            y, x = divmod(i, gridx)
+            pos = x*(mat_size+padd)+offx, y*(mat_size+padd)+offy
             self.screen.blit(pygame.transform.scale2x(MATERIAL_SPRITE[key]), (pos))
             text = self.master.font_d.render(F"x{amount}", True, (255, 255, 255))
             self.screen.blit(text, (pos[0]+mat_size/3*2, pos[1]+mat_size/2))
 
-        radius = 115
+        radius = min((W, H))/5*2
         # pygame.draw.arc(self.screen, (100, 0, 20), (W/2-radius+15, H/2-radius+15, (radius-15)*2, (radius-15)*2), 0, pi*2/self.max_health*self.health, 5)
         for i in range(self.max_health):
 

@@ -151,12 +151,12 @@ class Level:
         for layer in self.tile_map_layers:
 
             px1 = int(self.master.offset.x*-1//TILESIZE)
-            px2 = px1 + W//TILESIZE
+            px2 = px1 + W//TILESIZE +1
             py1 = int(self.master.offset.y*-1//TILESIZE)
             py2 = py1 + H//TILESIZE
 
-            if px2 == self.size[0]: px2 = self.size[0]-1
-            if py2 == self.size[1]: py2 = self.size[1]-1
+            if px2 >= self.size[0]: px2 = self.size[0]-1
+            if py2 >= self.size[1]: py2 = self.size[1]-1
             if px2 < 0: px2 = 0
             if py2 < 0: py2 = 0
 

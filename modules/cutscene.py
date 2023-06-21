@@ -118,7 +118,7 @@ class FiFo:
                 text = self.texts[self.page_index]
             else:
                 text = self.texts[self.page_index][:self.letter_index]
-            text_surf = self.master.font.render(text, False, (255, 255, 255), wraplength=int(W/2))
+            text_surf = self.master.font.render(text, False, (255, 255, 255), wraplength=int(W/3*2))
             rect = text_surf.get_rect(center=(W/2, H/2))
             self.screen.blit(text_surf, rect)
 
