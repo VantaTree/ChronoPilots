@@ -13,7 +13,9 @@ def load_materials():
     global MATERIAL_SPRITE
 
     MATERIAL_SPRITE = load_pngs_dict("graphics/materials")
-    (MATERIAL_SPRITE)
+    for key, value in MATERIAL_SPRITE.items():
+        MATERIAL_SPRITE[key] = pygame.transform.scale_by(value, 2)
+    MATERIAL_SPRITE.update(load_pngs_dict("graphics/ui/gun_ui"))
 
 PILOT_POSITION = [ None,
     (3024, 1169+36),
@@ -65,7 +67,8 @@ class Player(pygame.sprite.Sprite):
         self.moving = False
         self.in_control = True
         self.attacking = False
-        self.can_attack = False
+        self.can_attack = True
+        self.has_gun = False
 
         self.health = 5
         self.max_health = 5
@@ -74,7 +77,7 @@ class Player(pygame.sprite.Sprite):
         self.dying = False
 
         self.inventory = {}
-        # self.inventory = {"uranium":1, "titanium":2, "copper":3, "gold":4, "diamond":5, "wood":6, "rubber":7, "fruit":8, "vegetable":9}
+        self.inventory = {"uranium":1, "titanium":2, "copper":3, "gold":4, "diamond":5, "wood":6, "rubber":7, "fruit":8, "vegetable":9}
         self.inventory_open = False
         self.has_final_resource = False
         self.weapon_upgraded = False
@@ -197,7 +200,7 @@ class Player(pygame.sprite.Sprite):
                         self.master.game.pause_game()
                     if event.key == pygame.K_e:
                         self.master.interaction_manager.pressed_interact()
-                    if event.key == pygame.K_SPACE and self.in_control and self.can_attack:
+                    if event.key == pygame.K_SPACE and self.in_control and self.can_attack and self.has_gun:
                         self.attacking = True
                         self.in_control = False
                         self.can_attack = False
@@ -231,6 +234,7 @@ class Player(pygame.sprite.Sprite):
         self.in_control = True
         self.attacking = False
         self.can_attack = True
+        self.has_gun = True
         self.dying = False
         self.hurting = False
         self.invinsible = False
@@ -289,13 +293,24 @@ class Player(pygame.sprite.Sprite):
         offx = (W-widx)/2
         offy = (H-widy)/2
 
-        for i, (key, amount) in enumerate(self.inventory.items()):
+        inventory = []
+        if self.has_gun:
+            key = F"gun{'_upgraded' if self.weapon_upgraded else ''}{self.master.game.which_pilot}"
+            inventory.append((key, None))
+        if self.has_final_resource:
+            inventory.append(("final_resource", None))
+        for key, amount in self.inventory.items():
+            if amount != 0:
+                inventory.append((key, amount))
+
+        for i, (key, amount) in enumerate(inventory):
             if amount == 0: continue
             y, x = divmod(i, gridx)
             pos = x*(mat_size+padd)+offx, y*(mat_size+padd)+offy
-            self.screen.blit(pygame.transform.scale2x(MATERIAL_SPRITE[key]), (pos))
-            text = self.master.font_d.render(F"x{amount}", True, (255, 255, 255))
-            self.screen.blit(text, (pos[0]+mat_size/3*2, pos[1]+mat_size/2))
+            self.screen.blit(MATERIAL_SPRITE[key], (pos))
+            if amount is not None:
+                text = self.master.font_d.render(F"x{amount}", True, (255, 255, 255))
+                self.screen.blit(text, (pos[0]+mat_size/3*2, pos[1]+mat_size/2))
 
         radius = min((W, H))/5*2
         # pygame.draw.arc(self.screen, (100, 0, 20), (W/2-radius+15, H/2-radius+15, (radius-15)*2, (radius-15)*2), 0, pi*2/self.max_health*self.health, 5)
@@ -303,7 +318,7 @@ class Player(pygame.sprite.Sprite):
 
             angle = pi*2/self.max_health*i - pi/2
             surf = self.heart_surf if i < self.health else self.empty_heart_surf
-            rot_surf = pygame.transform.rotozoom(surf, -90 - degrees(angle), 1)
+            rot_surf = pygame.transform.rotate(surf, -90 - degrees(angle))
             pos = cos(angle)*radius + (W/2), sin(angle)*radius + (H/2)
             rect = rot_surf.get_rect(center=(pos))
             self.screen.blit(rot_surf, rect)
