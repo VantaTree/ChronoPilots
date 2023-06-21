@@ -309,8 +309,18 @@ class Player(pygame.sprite.Sprite):
             pos = x*(mat_size+padd)+offx, y*(mat_size+padd)+offy
             self.screen.blit(MATERIAL_SPRITE[key], (pos))
             if amount is not None:
-                text = self.master.font_d.render(F"x{amount}", True, (255, 255, 255))
+                text = self.master.font_d.render(F"x{amount}", False, (255, 255, 255))
                 self.screen.blit(text, (pos[0]+mat_size/3*2, pos[1]+mat_size/2))
+
+            mouse_pos = pygame.mouse.get_pos()
+            if pos[0] <= mouse_pos[0] <= pos[0]+mat_size and pos[1] <= mouse_pos[1] <= pos[1]+mat_size:
+                if key.startswith("gun"):
+                    name = "gun"
+                elif key == "final_resource":
+                    name = "final resource"
+                else: name = key
+                text = self.master.font_d.render(name, False, (255, 255, 255))
+                self.screen.blit(text, (pos[0]-(text.get_width()-mat_size)/2, pos[1]-text.get_height()+2))
 
         radius = min((W, H))/5*2
         # pygame.draw.arc(self.screen, (100, 0, 20), (W/2-radius+15, H/2-radius+15, (radius-15)*2, (radius-15)*2), 0, pi*2/self.max_health*self.health, 5)
