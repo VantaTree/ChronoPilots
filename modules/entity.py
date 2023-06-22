@@ -13,11 +13,11 @@ def do_collision(entity, axis, master, obj_rects):
 
             if x < 0 or y < 0: continue
 
-            rect = pygame.Rect(x*TILESIZE, y*TILESIZE, TILESIZE, TILESIZE)
-            if not entity.hitbox.colliderect(rect): continue
-
             cell = get_xy(master.level.collision, x, y)
             if cell is None or cell <= 0: continue
+
+            rect = pygame.Rect(x*TILESIZE, y*TILESIZE, TILESIZE, TILESIZE)
+            if not entity.hitbox.colliderect(rect): continue
 
             apply_collision(entity, axis, rect, cell)
 
@@ -30,7 +30,7 @@ def apply_collision(entity, axis, rect, cell=1):
 
     if axis == 0: # x-axis
 
-                if cell == 1:
+                if cell in (1, 2):
 
                     if entity.velocity.x > 0:
                         entity.hitbox.right = rect.left
@@ -39,11 +39,18 @@ def apply_collision(entity, axis, rect, cell=1):
 
     elif axis == 1: # y-axis
 
-        if cell == 1:
+        if cell in (1, 2):
             if entity.velocity.y < 0:
                 entity.hitbox.top = rect.bottom
             if entity.velocity.y > 0:
                 entity.hitbox.bottom = rect.top
+
+    elif axis == 2: # slants
+
+        if   cell == 4: pass # ◢
+        elif cell == 5: pass # ◣
+        elif cell == 6: pass # ◤
+        elif cell == 7: pass # ◥
 
                         
 def get_xy(grid, x, y):
