@@ -40,6 +40,8 @@ class App:
         icon = pygame.image.load("graphics/other/cover.png").convert()
         pygame.display.set_icon(icon)
         self.clock = pygame.time.Clock()
+        pygame.event.set_blocked(None)
+        pygame.event.set_allowed((pygame.QUIT, pygame.KEYDOWN, pygame.KEYUP, pygame.MOUSEBUTTONDOWN))
 
         self.state = self.MAIN_MENU
 
@@ -82,6 +84,9 @@ class App:
 
     def run_states(self):
 
+        if self.state not in (self.MAIN_MENU, self.IN_GAME, self.GAME_FINISH):
+            pygame.event.clear((pygame.KEYUP, pygame.MOUSEBUTTONDOWN))
+
         if self.state == self.INTRO_CUTSCENE:
             if self.cutscene.run():
                 self.state = self.IN_GAME
@@ -104,6 +109,11 @@ class App:
         elif self.state == self.LOST_CUTSCENE:
             if self.cutscene.run():
                 self.state = self.GAME_FINISH
+        elif self.state == self.TRANSITION:
+            if self.cutscene.run():
+                self.state = self.IN_GAME
+                self.cutscene = None
+
         elif self.state == self.GAME_FINISH:
 
             self.screen.fill(0x0)
@@ -116,15 +126,23 @@ class App:
             rect = text.get_rect(midbottom=(W/2, H-10))
             self.screen.blit(text, rect)
 
-        elif self.state == self.TRANSITION:
-            if self.cutscene.run():
-                self.state = self.IN_GAME
-                self.cutscene = None
+            text = self.master.font_1.render("Press \"q\" to Quit", False, "white")
+            rect = text.get_rect(midbottom=(W/2, H/2+60))
+            self.screen.blit(text, rect)
+
+            if pygame.key.get_pressed()[pygame.K_q]:
+                pygame.quit()
+                raise SystemExit
+
         elif self.state == self.MAIN_MENU:
             self.main_menu.run()
-            pass
+            pygame.event.clear((pygame.KEYUP, pygame.KEYDOWN))
         elif self.state == self.IN_GAME:
             self.game.run()
+            if self.game.paused:
+                pygame.event.clear((pygame.KEYUP))
+            else:
+                pygame.event.clear((pygame.MOUSEBUTTONDOWN))
 
 if __name__ == "__main__":
 
