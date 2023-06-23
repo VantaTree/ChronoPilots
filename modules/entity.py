@@ -3,7 +3,7 @@ from .config import *
 from .engine import *
 from .objects import objects_hitboxes
 
-def do_collision(entity, axis, master, obj_rects):
+def do_collision(entity, axis, master, obj_rects=None):
 
     px = int(entity.hitbox.centerx / TILESIZE)
     py = int(entity.hitbox.centery / TILESIZE)
@@ -19,14 +19,15 @@ def do_collision(entity, axis, master, obj_rects):
             rect = pygame.Rect(x*TILESIZE, y*TILESIZE, TILESIZE, TILESIZE)
             if not entity.hitbox.colliderect(rect): continue
 
-            apply_collision(entity, axis, rect, cell)
+            apply_collision(master, entity, axis, rect, cell)
 
-    for rect in obj_rects:
-        if not entity.hitbox.colliderect(rect): continue
-        apply_collision(entity, axis, rect)
+    if axis != 2:
+        for rect in obj_rects:
+            if not entity.hitbox.colliderect(rect): continue
+            apply_collision(master, entity, axis, rect)
 
 
-def apply_collision(entity, axis, rect, cell=1):
+def apply_collision(master, entity, axis, rect, cell=1):
 
     if axis == 0: # x-axis
 
@@ -46,11 +47,63 @@ def apply_collision(entity, axis, rect, cell=1):
                 entity.hitbox.bottom = rect.top
 
     elif axis == 2: # slants
-
-        if   cell == 4: pass # ◢
-        elif cell == 5: pass # ◣
-        elif cell == 6: pass # ◤
-        elif cell == 7: pass # ◥
+            
+        if   cell == 4: # ◢
+            gapy = rect.bottom - entity.hitbox.bottom
+            gapx = entity.hitbox.right - rect.left
+            if gapx < gapy: return
+            prev_pos = entity.hitbox.right - entity.velocity.x, entity.hitbox.bottom - entity.velocity.y
+            entity.hitbox.bottomright = prev_pos
+            if entity.velocity.x and entity.velocity.y:
+                entity.velocity.update()
+            elif entity.velocity.x > 0:
+                new_vel = entity.velocity.rotate(-45)
+                entity.hitbox.move_ip(new_vel)
+            elif entity.velocity.y > 0:
+                new_vel = entity.velocity.rotate(45)
+                entity.hitbox.move_ip(new_vel)
+        elif cell == 5: # ◣
+            gapy = rect.bottom - entity.hitbox.bottom
+            gapx = rect.right - entity.hitbox.left
+            if gapx < gapy: return
+            prev_pos = entity.hitbox.right - entity.velocity.x, entity.hitbox.bottom - entity.velocity.y
+            entity.hitbox.bottomright = prev_pos
+            if entity.velocity.x and entity.velocity.y:
+                entity.velocity.update()
+            elif entity.velocity.x < 0:
+                new_vel = entity.velocity.rotate(45)
+                entity.hitbox.move_ip(new_vel)
+            elif entity.velocity.y > 0:
+                new_vel = entity.velocity.rotate(-45)
+                entity.hitbox.move_ip(new_vel)
+        elif cell == 6: # ◤
+            gapy = entity.hitbox.top - rect.top
+            gapx = rect.right - entity.hitbox.left
+            if gapx < gapy: return
+            prev_pos = entity.hitbox.x - entity.velocity.x, entity.hitbox.y - entity.velocity.y
+            entity.hitbox.topleft = prev_pos
+            if entity.velocity.x and entity.velocity.y:
+                entity.velocity.update()
+            elif entity.velocity.x < 0:
+                new_vel = entity.velocity.rotate(-45)
+                entity.hitbox.move_ip(new_vel)
+            elif entity.velocity.y < 0:
+                new_vel = entity.velocity.rotate(45)
+                entity.hitbox.move_ip(new_vel)
+        elif cell == 7: # ◥
+            gapy = entity.hitbox.top - rect.top
+            gapx = entity.hitbox.right - rect.left
+            if gapx < gapy: return
+            prev_pos = entity.hitbox.right - entity.velocity.x, entity.hitbox.y - entity.velocity.y
+            entity.hitbox.topright = prev_pos
+            if entity.velocity.x and entity.velocity.y:
+                entity.velocity.update()
+            elif entity.velocity.x > 0:
+                new_vel = entity.velocity.rotate(45)
+                entity.hitbox.move_ip(new_vel)
+            elif entity.velocity.y < 0:
+                new_vel = entity.velocity.rotate(-45)
+                entity.hitbox.move_ip(new_vel)
 
                         
 def get_xy(grid, x, y):

@@ -188,6 +188,7 @@ class Player(pygame.sprite.Sprite):
         do_collision(self, 0, self.master, obj_rects)
         self.hitbox.centery += self.velocity.y * self.master.dt
         do_collision(self, 1, self.master, obj_rects)
+        do_collision(self, 2, self.master, obj_rects)
 
     def process_events(self):
 
