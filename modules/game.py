@@ -122,9 +122,12 @@ class Game:
                 else:
                     target_music = "plains"
                     target_amb = "ambient_plains"
-            else:
+            elif self.level.map_type == "terrain":
                 target_music = "cave"
                 target_amb = "ambient_cave"
+            else:
+                target_music = "crash_site"
+                target_amb = "ambient_crash_site"
 
             if self.master.music.current_track != target_music:
                 self.master.music.change_track(target_music)

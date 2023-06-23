@@ -337,7 +337,7 @@ class Player(pygame.sprite.Sprite):
 
         if self.dying: return
         self.screen.blit(self.image, self.rect.topleft + self.master.offset)
-        # pygame.draw.rect(self.screen, "blue", (self.hitbox.x+self.master.offset.x, self.hitbox.y+self.master.offset.y, self.hitbox.width, self.hitbox.height), 1)
+        pygame.draw.rect(self.screen, "blue", (self.hitbox.x+self.master.offset.x, self.hitbox.y+self.master.offset.y, self.hitbox.width, self.hitbox.height), 1)
 
     def update(self):
 
