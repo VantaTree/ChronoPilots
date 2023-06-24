@@ -68,8 +68,8 @@ class Projectile(pygame.sprite.Sprite):
 
         if x < 0 or y < 0: return
         cell = get_xy(self.master.level.collision, x, y)
-        if cell is None or cell <= 0: return
-        self.kill()
+        if cell == 1:
+            self.kill()
 
     def draw(self):
 
