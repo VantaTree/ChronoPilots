@@ -175,6 +175,7 @@ class Enemy(pygame.sprite.Sprite):
         self.invinsible = True
         self.hurt_for.start(200)
         self.invinsibility_timer.start(1_000)
+        self.master.particle_manager.spawn_blood(self.hitbox.center)
 
         if self.health <= 0:
             self.state = DYING
@@ -351,6 +352,7 @@ class Squid(pygame.sprite.Sprite):
         self.invinsible = True
         self.hurt_for.start(200)
         self.invinsibility_timer.start(1_000)
+        self.master.particle_manager.spawn_blood(self.hitbox.midbottom)
 
         if self.health <= 0:
             self.state = DYING

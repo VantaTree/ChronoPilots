@@ -1,7 +1,7 @@
 import pygame
 from .config import *
 from .engine import *
-from random import choice, uniform
+from random import choice, uniform, randint
 
 class ParticleManager:
 
@@ -31,6 +31,20 @@ class ParticleManager:
                 color = choice(("brown", "gold", "burlywood", "burlywood1", "burlywood2", "burlywood3", "burlywood4", "#df821c", "#df821c", "#df821c"))
                 Particle(self.master, [self.below_grp], pos, color, size=(2, 2))
 
+    def spawn_blood(self, pos, intensity=100):
+
+        for _ in range(intensity):
+            
+            speed = uniform(0.3, 1.2)
+            velocity = pygame.Vector2()
+            velocity.from_polar((speed, randint(0, 365)))
+            duration = randint(16, 22)*100
+            friction = 0.03
+            size = (2, 2)
+            size = (randint(1, 2), randint(1, 2))
+            color = choice(("red", "darkred", "firebrick1", "firebrick2", "firebrick3", "red1", "red2", "red3"))
+
+            Particle(self.master, [self.below_grp], pos, color, size, velocity, friction=friction, duration=duration)
 
     def add(self, type):
 
