@@ -197,6 +197,13 @@ class Player(pygame.sprite.Sprite):
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_h:
                         self.get_hurt(1)
+                    if event.key == pygame.K_i:
+                        self.master.debug.on = not self.master.debug.on
+                    if event.key == pygame.K_k:
+                        if self.health < self.max_health:
+                            self.health += 1
+                    if event.key == pygame.K_g:
+                        self.has_gun = not self.has_gun
                     if event.key == pygame.K_ESCAPE:
                         self.master.game.pause_game()
                     if event.key == pygame.K_e:
@@ -338,7 +345,8 @@ class Player(pygame.sprite.Sprite):
 
         if self.dying: return
         self.screen.blit(self.image, self.rect.topleft + self.master.offset)
-        pygame.draw.rect(self.screen, "blue", (self.hitbox.x+self.master.offset.x, self.hitbox.y+self.master.offset.y, self.hitbox.width, self.hitbox.height), 1)
+        if self.master.debug.on:
+            pygame.draw.rect(self.screen, "blue", (self.hitbox.x+self.master.offset.x, self.hitbox.y+self.master.offset.y, self.hitbox.width, self.hitbox.height), 1)
 
     def update(self):
 
