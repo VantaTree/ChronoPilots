@@ -195,6 +195,8 @@ class Player(pygame.sprite.Sprite):
         if self.in_control and not self.inventory_open:
             for event in pygame.event.get((pygame.KEYUP, pygame.KEYDOWN)):
                 if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_u:
+                        self.weapon_upgraded = not self.weapon_upgraded
                     if event.key == pygame.K_i:
                         self.master.debug.on = not self.master.debug.on
                     if event.key == pygame.K_k:
