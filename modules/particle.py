@@ -45,7 +45,7 @@ class ParticleManager:
 
 class Particle(pygame.sprite.Sprite):
 
-    def __init__(self, master, grps, pos, color="red", size=(1, 1), direction=(0, 0), duration=500, speed=0, fade=True):
+    def __init__(self, master, grps, pos, color="red", size=(1, 1), velocity=(0, 0), force=(0, 0), friction=0, duration=500, fade=True, anchor=None, anchor_pull=0):
 
         super().__init__(grps)
         self.master = master
@@ -55,9 +55,12 @@ class Particle(pygame.sprite.Sprite):
         self.image.fill(color)
         self.rect = self.image.get_frect(center=pos)
 
-        self.direction = pygame.Vector2(direction)
-        self.speed = speed
+        self.velocity = pygame.Vector2(velocity)
+        self.force = pygame.Vector2(force)
+        self.friction = friction
         self.duration = duration
+        self.anchor = anchor
+        self.anchor_pull = anchor_pull
         self.fade = fade
         self.start_time = pygame.time.get_ticks()
         
@@ -71,10 +74,19 @@ class Particle(pygame.sprite.Sprite):
 
     def update(self):
 
-        self.rect.center += self.direction*self.speed*self.master.dt
+        self.velocity += self.force *self.master.dt
+        if self.friction != 0:
+            self.velocity.move_towards_ip((0, 0), self.friction *self.master.dt)
+        if self.anchor:
+            anchor_force = pygame.Vector2(self.anchor[0] - self.rect.centerx, self.anchor[1] - self.rect.centery)
+            anchor_force.scale_to_length(self.anchor_pull)
+            self.velocity += anchor_force*self.master.dt
 
-        alpha = (pygame.time.get_ticks()-self.start_time) / self.duration * 255
-        self.image.set_alpha(255-alpha)
+        self.rect.center += self.velocity *self.master.dt
+
+        if self.fade:
+            alpha = (pygame.time.get_ticks()-self.start_time) / self.duration * 255
+            self.image.set_alpha(255-alpha)
 
         if self.alive_timer.check():
             self.kill()
