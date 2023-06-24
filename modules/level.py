@@ -167,34 +167,33 @@ class Level:
                     if image is None: continue
                     self.screen.blit(image, (x*TILESIZE + self.master.offset.x, y*TILESIZE + self.master.offset.y - image.get_height() + TILESIZE))
 
-        if self.master.debug.on:
-            for y in range(self.size[1]):
-                for x in range(self.size[0]):
 
-                    cell =  self.collision[y][x]
-                    if not cell: continue
-                    if cell == 1:
-                        pygame.draw.rect(self.screen, "green", (x*16+self.master.offset.x, y*16+self.master.offset.y, 16, 16), 1)
-                    elif cell == 2:
-                        pygame.draw.rect(self.screen, "blue", (x*16+self.master.offset.x, y*16+self.master.offset.y, 16, 16), 1)
-                    elif cell == 4:
-                        pygame.draw.polygon(self.screen, 'blue', ( ((x*TILESIZE, y*TILESIZE+TILESIZE)+self.master.offset).xy,
-                        ((x*TILESIZE+TILESIZE, y*TILESIZE+TILESIZE)+self.master.offset).xy, ((x*TILESIZE+TILESIZE, y*TILESIZE)+self.master.offset).xy ), 1)
-                    elif cell == 5:
-                        pygame.draw.polygon(self.screen, 'blue', ( ((x*TILESIZE, y*TILESIZE+TILESIZE)+self.master.offset).xy,
-                        ((x*TILESIZE+TILESIZE, y*TILESIZE+TILESIZE)+self.master.offset).xy, ((x*TILESIZE, y*TILESIZE)+self.master.offset).xy ), 1)
-                    elif cell == 6:
-                        pygame.draw.polygon(self.screen, 'blue', ( ((x*TILESIZE, y*TILESIZE+TILESIZE)+self.master.offset).xy,
-                        ((x*TILESIZE, y*TILESIZE)+self.master.offset).xy, ((x*TILESIZE+TILESIZE, y*TILESIZE)+self.master.offset).xy ), 1)
-                    elif cell == 7:
-                        pygame.draw.polygon(self.screen, 'blue', ( ((x*TILESIZE, y*TILESIZE)+self.master.offset).xy,
-                        ((x*TILESIZE+TILESIZE, y*TILESIZE)+self.master.offset).xy, ((x*TILESIZE+TILESIZE, y*TILESIZE+TILESIZE)+self.master.offset).xy ), 1)
+        for y in range(self.size[1]):
+            for x in range(self.size[0]):
+
+                cell =  self.collision[y][x]
+                if not cell: continue
+                if cell == 1:
+                    pygame.draw.rect(self.screen, "green", (x*16+self.master.offset.x, y*16+self.master.offset.y, 16, 16), 1)
+                elif cell == 2:
+                    pygame.draw.rect(self.screen, "blue", (x*16+self.master.offset.x, y*16+self.master.offset.y, 16, 16), 1)
+                elif cell == 4:
+                    pygame.draw.polygon(self.screen, 'blue', ( ((x*TILESIZE, y*TILESIZE+TILESIZE)+self.master.offset).xy,
+                    ((x*TILESIZE+TILESIZE, y*TILESIZE+TILESIZE)+self.master.offset).xy, ((x*TILESIZE+TILESIZE, y*TILESIZE)+self.master.offset).xy ), 1)
+                elif cell == 5:
+                    pygame.draw.polygon(self.screen, 'blue', ( ((x*TILESIZE, y*TILESIZE+TILESIZE)+self.master.offset).xy,
+                    ((x*TILESIZE+TILESIZE, y*TILESIZE+TILESIZE)+self.master.offset).xy, ((x*TILESIZE, y*TILESIZE)+self.master.offset).xy ), 1)
+                elif cell == 6:
+                    pygame.draw.polygon(self.screen, 'blue', ( ((x*TILESIZE, y*TILESIZE+TILESIZE)+self.master.offset).xy,
+                    ((x*TILESIZE, y*TILESIZE)+self.master.offset).xy, ((x*TILESIZE+TILESIZE, y*TILESIZE)+self.master.offset).xy ), 1)
+                elif cell == 7:
+                    pygame.draw.polygon(self.screen, 'blue', ( ((x*TILESIZE, y*TILESIZE)+self.master.offset).xy,
+                    ((x*TILESIZE+TILESIZE, y*TILESIZE)+self.master.offset).xy, ((x*TILESIZE+TILESIZE, y*TILESIZE+TILESIZE)+self.master.offset).xy ), 1)
 
     def draw_fg(self):
 
-        # if self.master.debug.on:
-        #     for rect in self.object_hitboxes:
-        #         pygame.draw.rect(self.screen, "green", (rect.x+self.master.offset.x, rect.y+self.master.offset.y, rect.width, rect.height), 1)
+        # for rect in self.object_hitboxes:
+        #     pygame.draw.rect(self.screen, "green", (rect.x+self.master.offset.x, rect.y+self.master.offset.y, rect.width, rect.height), 1)
 
         if self.map_type == "terrain":
 
