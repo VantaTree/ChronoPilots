@@ -2,7 +2,7 @@ import pygame
 from .engine import *
 from .config import *
 from .objects import SpaceShip1, OreDeposit, TreeWithStuff, SpaceShip2, SpaceShip3, SpaceShip4, Door
-from .enemies import Enemy, Squid
+from .enemies import Dog, Squid
 from .projectile import Projectile
 from pytmx.util_pygame import load_pygame
 from math import sin, pi
@@ -70,9 +70,9 @@ class Level:
             TreeWithStuff(self.master, [self.obj_grp], stuff, ore_obj, 1)
         elif id in (18, 19):
             dog = ["dog1", "dog2"][id-18]
-            Enemy(self.master, [self.camera_grp, self.enemy_grp], (ore_obj.x, ore_obj.y), dog, self.map_type)
+            Dog(self.master, [self.camera_grp, self.enemy_grp], self, (ore_obj.x, ore_obj.y), dog)
         elif id == 20:
-            Squid(self.master, [self.camera_grp, self.enemy_grp], (ore_obj.x, ore_obj.y), self.map_type)
+            Squid(self.master, [self.camera_grp, self.enemy_grp], self, (ore_obj.x, ore_obj.y))
 
     def get_tile_layers(self):
 
@@ -105,7 +105,6 @@ class Level:
         SpaceShip1(self.master, [self.camera_grp, self.obj_grp], (3024, 1169), self.object_hitboxes)
         self.spawn_rect.center = (3024, 1169)
         Door(self.master, [self.obj_grp], "cave")
-        # Enemy(self.master, [self.camera_grp, self.enemy_grp], (3024, 1169+200), "dog1", "terrain")
 
         self.maroon_overlay = pygame.Surface(self.screen.get_size())
         self.maroon_overlay.fill(0x4C4A93)
@@ -118,7 +117,6 @@ class Level:
 
     def init_cave(self):
         
-        # Enemy(self.master, [self.camera_grp, self.enemy_grp], (3*16, 6*16), "test", "cave")
         Door(self.master, [self.obj_grp], "terrain")
 
     def shoot_projectile(self, key, obj):
