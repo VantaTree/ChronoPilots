@@ -192,9 +192,10 @@ class Player(pygame.sprite.Sprite):
 
     def process_events(self):
 
-        if self.in_control and not self.inventory_open:
+        if (self.in_control or self.hurting) and not self.inventory_open:
             for event in pygame.event.get((pygame.KEYUP, pygame.KEYDOWN)):
                 if event.type == pygame.KEYDOWN:
+                    #debug
                     if event.key == pygame.K_u:
                         self.weapon_upgraded = not self.weapon_upgraded
                     if event.key == pygame.K_i:
@@ -206,11 +207,12 @@ class Player(pygame.sprite.Sprite):
                             self.health += 1
                     if event.key == pygame.K_g:
                         self.has_gun = not self.has_gun
+
                     if event.key == pygame.K_ESCAPE:
                         self.master.game.pause_game()
-                    if event.key == pygame.K_e:
+                    if event.key == pygame.K_e and not self.hurting:
                         self.master.interaction_manager.pressed_interact()
-                    if event.key == pygame.K_SPACE and self.in_control and self.can_attack and self.has_gun:
+                    if event.key == pygame.K_SPACE and self.in_control and self.can_attack and self.has_gun and not self.hurting:
                         self.attacking = True
                         self.in_control = False
                         self.can_attack = False
@@ -221,7 +223,7 @@ class Player(pygame.sprite.Sprite):
                             proj = "player_small"
                         else: proj = "player_mini"
                         self.master.level.shoot_projectile(proj, self)
-        elif self.inventory_open or self.hurting:
+        elif self.inventory_open:
             pygame.event.clear((pygame.KEYUP, pygame.KEYDOWN))
 
         if self.attack_cooldown.check():
