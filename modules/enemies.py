@@ -109,8 +109,8 @@ class Enemy(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(midbottom = self.hitbox.midbottom)
 
         if self.invinsible:
-            self.image.fill((255, 255, 255), special_flags=pygame.BLEND_RGB_MAX)
             if self.hurting:
+                self.image.fill((255, 255, 255), special_flags=pygame.BLEND_RGB_MAX)
                 self.image.fill((255, 0, 0), special_flags=pygame.BLEND_RGB_MIN)
             self.image.set_alpha(int((sin(pygame.time.get_ticks()/30)+1)/2 *255))
 
@@ -297,8 +297,8 @@ class Squid(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center = self.hitbox.center)
 
         if self.invinsible:
-            self.image.fill((255, 255, 255), special_flags=pygame.BLEND_RGB_MAX)
             if self.hurting:
+                self.image.fill((255, 255, 255), special_flags=pygame.BLEND_RGB_MAX)
                 self.image.fill((255, 0, 0), special_flags=pygame.BLEND_RGB_MIN)
             self.image.set_alpha(int((sin(pygame.time.get_ticks()/30)+1)/2 *255))
 
