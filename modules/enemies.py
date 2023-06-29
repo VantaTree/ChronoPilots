@@ -21,11 +21,12 @@ IDLE = 0
 AGRO = 1
 FOLLOW = 2
 ATTACK = 3
-DYING = 4
+ANGRY = 4
+DYING = 5
 
 class Enemy(pygame.sprite.Sprite):
 
-    def __init__(self, master, grps, level, sprite_type, pos, hitbox, attack_rect, max_health, max_speed, acc, dcc):
+    def __init__(self, master, grps, level, sprite_type, pos, hitbox, attack_rect, max_health, max_speed, acc, dcc, **kwargs):
 
         super().__init__(grps)
         self.master = master
@@ -60,6 +61,11 @@ class Enemy(pygame.sprite.Sprite):
         self.invinsible = False
         self.hurting = False
 
+        self.ambience_dist = kwargs.get("ambience_dist") # makes creature noises within this distance
+        self.calm_dist = kwargs.get("calm_dist") # clams the creature after this distance
+        self.follow_dist = kwargs.get("follow_dist") # follows within this distance
+        self.attack_dist = kwargs.get("attack_dist") # initiates an attack in this distance
+
         self.invinsibility_timer = CustomTimer()
         self.hurt_for = CustomTimer()
 
@@ -76,7 +82,7 @@ class Enemy(pygame.sprite.Sprite):
             image = self.animations[state][0]
             self.anim_index = 0
             if self.state == ATTACK:
-                self.state = AGRO
+                self.state = FOLLOW
             elif self.state == DYING:
                 self.die()
                 return
@@ -152,6 +158,9 @@ class Enemy(pygame.sprite.Sprite):
     def get_hurt(self, damage):
 
         if self.invinsible or self.state == DYING: return
+        if self.state in (IDLE, AGRO):
+            self.state = ANGRY
+        elif self.state != ANGRY: self.state = FOLLOW
         self.health -= damage
         self.velocity.update()
         self.moving = False
@@ -187,8 +196,10 @@ class Enemy(pygame.sprite.Sprite):
 
 class Dog(Enemy):
 
-    def __init__(self, master, grps, level, pos, sprite_type, ranget=(8, 12)):
-        super().__init__(master, grps, level, sprite_type, pos, (0, 0, 12, 6), (4, 21, 11, 11), 6, 1.1, 0.08, 0.04)
+    def __init__(self, master, grps, level, pos, sprite_type, ranget=(40, 60)):
+        super().__init__(master, grps, level, sprite_type, pos, (0, 0, 12, 6), (4, 21, 11, 11),
+                         6, 1.1, 0.08, 0.04, ambience_dist=(16*16), calm_dist=(28*16), follow_dist=(8*16),
+                         attack_dist=(1.5*16))
 
         self.follow_timer = CustomTimer()
         self.follow_for = CustomTimer()
@@ -202,31 +213,31 @@ class Dog(Enemy):
         if self.state == DYING: return
 
         dist = dist_sq(self.master.player.rect.center, self.rect.center)
-        if dist < (8*16)**2:
+        if dist < self.follow_dist**2:
             if self.state == IDLE:
                 self.state = AGRO
-        else:
+        elif self.state != ANGRY:
             self.state = IDLE
             self.target_direc.update()
-        if dist < (12*16)**2:
+        if dist < self.ambience_dist**2:
             if randint(0, 3_000) == randint(693, 713):
                 self.master.sounds["SFX_CreatureIdle"].play()
-        if self.state == FOLLOW:
+        if dist > self.calm_dist**2 and self.state == ANGRY:
+            self.state = IDLE
+        if self.state in (FOLLOW, ANGRY):
             self.target_direc.update(self.master.player.rect.centerx - self.rect.centerx,
                 self.master.player.rect.centery - self.rect.centery)
             try:
                 self.target_direc.normalize_ip()
-            except ValueError:
-                self.target_direc.update()
+            except ValueError: pass
 
-        if self.state in (AGRO, FOLLOW):
+        if self.state in (AGRO, FOLLOW, ANGRY):
             self.facing_direc.update(self.master.player.rect.centerx - self.rect.centerx,
                 self.master.player.rect.centery - self.rect.centery)
             try:
                 self.facing_direc.normalize_ip()
-            except ValueError:
-                self.facing_direc.update()
-            if dist_sq(self.master.player.rect.center, self.rect.center) < (16*2)**2:
+            except ValueError: pass
+            if dist < self.attack_dist**2:
                 self.state = ATTACK
                 self.anim_index = 0
                 self.target_direc.update()
@@ -242,22 +253,24 @@ class Dog(Enemy):
 
         super().check_timers()
 
-        if self.follow_timer.check() and self.state == AGRO:
+        if self.follow_timer.check() and self.state == FOLLOW:
             self.state = FOLLOW
             self.follow_for.start(randint(30, 60)*100)
-        if self.follow_for.check() and self.state != IDLE:
+        if self.follow_for.check() and self.state not in (IDLE, AGRO):
             self.state = AGRO
             self.target_direc.update()
             self.moving = False
         if self.start_this_timer.check():
-            self.follow_timer.start(randint(*self.ranget)*1000, 0)
+            self.follow_timer.start(randint(*self.ranget)*100, 0)
 
 
 class Squid(Enemy):
 
     def __init__(self, master, grps, level, pos):
 
-        super().__init__(master, grps, level, "squid", pos, (0, 0, 22, 14), (0, 0, 22, 14), 4, 1.0, 0.04, 0.02)
+        super().__init__(master, grps, level, "squid", pos, (0, 0, 22, 14), (0, 0, 22, 14), 4, 1.0, 0.04, 0.02,
+                         ambience_dist=(16*16), calm_dist=(28*16), follow_dist=(12*16),
+                         attack_dist=(1.5*16))
         self.hitbox.center = pos
 
     def update_image(self):
@@ -274,8 +287,7 @@ class Squid(Enemy):
             image = self.animations[state][0]
             self.anim_index = 0
             if self.state == DYING:
-                DeadBody(self.master, [self.master.level.camera_grp], self.animations["dead"][0], self.rect.midbottom, self.facing_direc.x<0)
-                self.kill()
+                self.die()
                 return
 
         if self.moving: self.anim_speed = 0.15
@@ -297,18 +309,22 @@ class Squid(Enemy):
 
         if self.state == DYING: return
         dist = dist_sq(self.master.player.rect.center, self.rect.center)
-        if dist < (8*16)**2:
+        if dist < self.attack_dist**2 and self.state == ANGRY:
+            self.state = FOLLOW
+        elif dist < self.follow_dist**2:
             if self.state == IDLE:
                 self.state = FOLLOW
-        else:
+        elif self.state != ANGRY:
             self.state = IDLE
             self.target_direc.update()
 
-        if dist < (12*16)**2:
+        if dist < self.ambience_dist**2:
             if randint(0, 1_020) == randint(10, 20):
                 self.master.sounds["SFX_CreatureIdle"].play()
+        if dist > self.calm_dist**2 and self.state == ANGRY:
+            self.state = IDLE
 
-        if self.state == FOLLOW:
+        if self.state in (FOLLOW, ANGRY):
             self.target_direc.update(self.master.player.rect.centerx - self.rect.centerx,
                 self.master.player.rect.centery - self.rect.centery)
             try:
