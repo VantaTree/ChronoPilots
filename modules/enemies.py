@@ -68,6 +68,8 @@ class Enemy(pygame.sprite.Sprite):
 
         self.invinsibility_timer = CustomTimer()
         self.hurt_for = CustomTimer()
+        self.ambience_timer = CustomTimer()
+        self.ambience_timer.start(randint(1_000, 1_500))
 
     def update_image(self):
 
@@ -136,6 +138,11 @@ class Enemy(pygame.sprite.Sprite):
             self.invinsible = False
         if self.hurt_for.check():
             self.hurting = False
+        if self.ambience_timer.check():
+            self.ambience_timer.start(randint(3000, 6000))
+            if randint(1, 4) == 2:
+                if dist_sq(self.master.player.rect.center, self.rect.center) < self.ambience_dist**2:
+                    self.master.sounds["SFX_CreatureIdle"].play()
 
     def move(self):
 
@@ -219,9 +226,6 @@ class Dog(Enemy):
         elif self.state != ANGRY:
             self.state = IDLE
             self.target_direc.update()
-        if dist < self.ambience_dist**2:
-            if randint(0, 3_000) == randint(693, 713):
-                self.master.sounds["SFX_CreatureIdle"].play()
         if dist > self.calm_dist**2 and self.state == ANGRY:
             self.state = IDLE
         if self.state in (FOLLOW, ANGRY):
@@ -318,9 +322,6 @@ class Squid(Enemy):
             self.state = IDLE
             self.target_direc.update()
 
-        if dist < self.ambience_dist**2:
-            if randint(0, 1_020) == randint(10, 20):
-                self.master.sounds["SFX_CreatureIdle"].play()
         if dist > self.calm_dist**2 and self.state == ANGRY:
             self.state = IDLE
 
@@ -329,13 +330,11 @@ class Squid(Enemy):
                 self.master.player.rect.centery - self.rect.centery)
             try:
                 self.target_direc.normalize_ip()
-            except ValueError:
-                self.target_direc.update()
+            except ValueError: pass
 
             self.facing_direc.update(self.master.player.rect.centerx - self.rect.centerx,
                 self.master.player.rect.centery - self.rect.centery)
             try:
                 self.facing_direc.normalize_ip()
-            except ValueError:
-                self.facing_direc.update()
+            except ValueError: pass
 
