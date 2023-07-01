@@ -36,7 +36,7 @@ class Enemy(pygame.sprite.Sprite):
         self.sprite_type = sprite_type
         self.animations = ENEMY_SPRITES[sprite_type]
         self.image = self.animations["idle"][0]
-        self.rect = self.image.get_rect()
+        self.rect = self.image.get_rect(topleft=pos)
 
         self.anim_index = 0
         self.anim_speed = 0.15
@@ -46,7 +46,7 @@ class Enemy(pygame.sprite.Sprite):
 
         self.pos = pos
         self.hitbox = pygame.FRect(*hitbox)
-        self.hitbox.midbottom = pos
+        self.hitbox.midbottom = self.rect.midbottom
         self.velocity = pygame.Vector2()
         self.target_direc = pygame.Vector2()
         self.max_speed = max_speed
@@ -70,6 +70,13 @@ class Enemy(pygame.sprite.Sprite):
         self.hurt_for = CustomTimer()
         self.ambience_timer = CustomTimer()
         self.ambience_timer.start(randint(1_000, 1_500))
+
+    def change_pilot(self, which_pilot):
+
+        self.health = self.max_health
+        self.state = IDLE
+        self.rect.topleft = self.pos
+        self.hitbox.midbottom = self.rect.midbottom
 
     def update_image(self):
 
@@ -275,7 +282,12 @@ class Squid(Enemy):
         super().__init__(master, grps, level, "squid", pos, (0, 0, 22, 14), (0, 0, 22, 14), 4, 1.0, 0.04, 0.02,
                          ambience_dist=(16*16), calm_dist=(28*16), follow_dist=(12*16),
                          attack_dist=(1.5*16))
-        self.hitbox.center = pos
+        self.hitbox.center = self.rect.center
+
+    def change_pilot(self, which_pilot):
+
+        super().change_pilot(which_pilot)
+        self.hitbox.center = self.rect.center
 
     def update_image(self):
 

@@ -89,6 +89,10 @@ class Game:
         self.level = self.terrain_level
         self.master.level = self.level
 
+        for lvl in (self.terrain_level, self.cave_level, self.test_level):
+            for enemy in lvl.enemy_grp.sprites():
+                enemy.change_pilot(which_pilot)
+
     def transition_to(self, map, pos):
 
         if map == "terrain":

@@ -53,12 +53,12 @@ class Level:
 
                 self.collision[y][x] = self.data.tiledgidmap[gid] - collision_firstgid
 
-    def create_lvl_object(self, id, ore_obj):
+    def create_lvl_object(self, id, obj):
 
         if (1 < id <= 6) or id == 17:
             l = [None, None, "copper", "diamond", "gold", "titanium", "uranium"]
             c = l[id] if id != 17 else "final"
-            OreDeposit(self.master, [self.obj_grp], c, ore_obj, 3)
+            OreDeposit(self.master, [self.obj_grp], c, obj, 3)
         elif id in (14, 15, 16):
             if id == 14:
                 stuff = "fruit"
@@ -67,12 +67,12 @@ class Level:
             elif id == 16:
                 stuff = "rubber"
 
-            TreeWithStuff(self.master, [self.obj_grp], stuff, ore_obj, 1)
+            TreeWithStuff(self.master, [self.obj_grp], stuff, obj, 1)
         elif id in (18, 19):
             dog = ["dog1", "dog2"][id-18]
-            Dog(self.master, [self.camera_grp, self.enemy_grp], self, (ore_obj.x, ore_obj.y), dog)
+            Dog(self.master, [self.camera_grp, self.enemy_grp], self, (obj.x, obj.y), dog)
         elif id == 20:
-            Squid(self.master, [self.camera_grp, self.enemy_grp], self, (ore_obj.x, ore_obj.y))
+            Squid(self.master, [self.camera_grp, self.enemy_grp], self, (obj.x, obj.y))
 
     def get_tile_layers(self):
 
