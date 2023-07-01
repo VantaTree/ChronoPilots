@@ -106,9 +106,9 @@ class Level:
         self.spawn_rect.center = (3024, 1169)
         Door(self.master, [self.obj_grp], "cave")
 
-        self.maroon_overlay = pygame.Surface(self.screen.get_size())
-        self.maroon_overlay.fill(0x4C4A93)
-        self.maroon_overlay.set_alpha(0)
+        self.night_overlay = pygame.Surface(self.screen.get_size())
+        self.night_overlay.fill(0x4C4A93)
+        self.night_overlay.set_alpha(0)
         self.night_alpha = 128
         self.current_time_alpha = 0
         self.time_alpha_direction = 1
@@ -208,8 +208,8 @@ class Level:
             else:
                 self.day_progress_timer.duration = 1_000
 
-            self.maroon_overlay.set_alpha(self.current_time_alpha)
-            self.screen.blit(self.maroon_overlay, (0, 0))
+            self.night_overlay.set_alpha(self.current_time_alpha)
+            self.screen.blit(self.night_overlay, (0, 0))
             self.master.debug("day:", self.current_time_alpha)
 
         if self.player.inventory_open:
