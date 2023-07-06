@@ -2,6 +2,7 @@ import pygame
 from .config import *
 from .engine import *
 from random import choice, uniform, randint
+from math import sqrt
 
 class ParticleManager:
 
@@ -40,11 +41,27 @@ class ParticleManager:
             velocity.from_polar((speed, randint(0, 365)))
             duration = randint(16, 22)*100
             friction = 0.03
-            size = (2, 2)
+            # size = (2, 2)
             size = (randint(1, 2), randint(1, 2))
             color = choice(("red", "darkred", "firebrick1", "firebrick2", "firebrick3", "red1", "red2", "red3"))
 
             Particle(self.master, [self.below_grp], pos, color, size, velocity, friction=friction, duration=duration)
+
+    def spawn_muzzle_flash(self, position, direction, intensity=150, dist=20.0, angle=30.0):
+
+        for _ in range(intensity):
+            
+            radius = 14
+            # distance = (sqrt(uniform(0.0, dist**2)))
+            # distance = (dist-sqrt(uniform(0.0, dist**2)))
+            distance = uniform(0.0, dist)
+            pos = position + (direction*radius) + direction.rotate(uniform(-angle, angle)) * distance
+            friction = 0.03
+            size = (randint(1, 2), randint(1, 2))
+            # colors = ("white", "lightyellow", "yellow", "red")
+            colors = (0xFFFF22, 0xFFFF88, 0xFFFFCC, 0xFFFF88, 0xFFFF22)
+            color = colors[int(distance/dist*len(colors))]
+            Particle(self.master, [self.above_grp], pos, color, size, friction=friction, duration=100, fade=True)
 
     def add(self, type):
 

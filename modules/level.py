@@ -119,12 +119,23 @@ class Level:
         
         Door(self.master, [self.obj_grp], "terrain")
 
-    def shoot_projectile(self, key, obj):
+    def shoot_projectile(self, weapon_upgraded, obj):
 
-        if key == "player_small":
-            Projectile(self.master, [self.camera_grp, self.projectile_grp], "projectile_small", obj.rect.center, obj.facing_direc.copy(), damage=2)
-        if key == "player_mini":
-            Projectile(self.master, [self.camera_grp, self.projectile_grp], "projectile_mini", obj.rect.center, obj.facing_direc.copy(), damage=1)
+        direction = obj.facing_direc.normalize()
+        if not weapon_upgraded:
+            key = "projectile_mini"
+            damage = 1
+            intensity = 150
+            dist = 16
+            angle = 25
+        else:
+            key = "projectile_small"
+            damage = 2
+            intensity = 200
+            dist = 20
+            angle = 30
+        Projectile(self.master, [self.camera_grp, self.projectile_grp], key, obj.rect.center, direction, damage=damage)
+        self.master.particle_manager.spawn_muzzle_flash(obj.rect.center, direction, intensity, dist, angle)        
 
     def change_pilot(self, which_pilot):
 

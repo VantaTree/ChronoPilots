@@ -219,10 +219,7 @@ class Player(pygame.sprite.Sprite):
                         self.attack_cooldown.start(500)
                         self.attack_for.start(200)
                         self.master.sounds.play("SFX_Weapon", (1, 4))
-                        if self.weapon_upgraded:
-                            proj = "player_small"
-                        else: proj = "player_mini"
-                        self.master.level.shoot_projectile(proj, self)
+                        self.master.level.shoot_projectile(self.weapon_upgraded, self)
         elif self.inventory_open:
             pygame.event.clear((pygame.KEYUP, pygame.KEYDOWN))
 
