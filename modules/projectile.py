@@ -72,6 +72,8 @@ class Projectile(pygame.sprite.Sprite):
         cell = get_xy(self.master.level.collision, x, y)
         if cell == 1:
             self.kill()
+            big = self.damage >= 2
+            self.master.particle_manager.spawn_explosion(self.hitbox.center, big, 20 if not big else 60)
 
     def draw(self):
 
