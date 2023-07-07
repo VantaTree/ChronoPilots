@@ -171,7 +171,7 @@ class Enemy(pygame.sprite.Sprite):
 
     def get_hurt(self, damage):
 
-        if self.invinsible or self.state == DYING: return
+        if self.invinsible or self.state == DYING: return False
         if self.state in (IDLE, AGRO):
             self.state = ANGRY
         elif self.state != ANGRY: self.state = FOLLOW
@@ -190,6 +190,7 @@ class Enemy(pygame.sprite.Sprite):
             self.master.sounds["SFX_Death"].play()
         else:
             self.master.sounds.play("SFX_CreatureDamage", (1, 2))
+        return True
 
     def draw(self):
 
