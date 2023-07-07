@@ -22,9 +22,9 @@ class Projectile(pygame.sprite.Sprite):
 
         self.animation = PROJECTILE_SPRITES[sprite_type]
         self.image = self.animation[0]
-        self.rect = self.image.get_frect(center=pos)
+        self.rect = self.image.get_rect(center=pos)
         
-        self.hitbox = self.rect
+        self.hitbox = self.image.get_frect(center=pos)
         self.direction = direction.normalize()
 
         self.anim_speed = anim_speed
@@ -43,10 +43,12 @@ class Projectile(pygame.sprite.Sprite):
         self.anim_index += self.anim_speed *self.master.dt
 
         self.image = pygame.transform.rotozoom(image, self.direction.angle_to((1, 0)), 1)
+        self.rect = self.image.get_rect(center=self.hitbox.center)
 
     def move(self):
 
         self.hitbox.center += self.direction*self.speed*self.master.dt
+        self.rect.center = self.hitbox.center
 
     def check_hit(self):
 
