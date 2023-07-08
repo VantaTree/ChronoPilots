@@ -55,20 +55,28 @@ CUTSCENE_TEXT = {
         "............DOOMED............\n............DOOMED............\n............DOOMED............\n............DOOMED............\n............DOOMED............\n............DOOMED............",
         "DOOMED FOREVER"
     ],
-    "transition":[]
+    "transition":[],
+    "mission_completed":[
+        "Mission Completed"
+    ],
+    "you_died":[
+        "You Died!"
+    ],
 }
 
 
 class FiFo:
     "fade-in fade-out cutscene"
 
-    def __init__(self, master, type) -> None:
+    def __init__(self, master, type, continue_text=True, text_color=0xFFFFFFFF) -> None:
 
         self.master = master
         self.screen = pygame.display.get_surface()
 
         self.black_bg = pygame.Surface(self.screen.get_size())
         self.black_bg.set_alpha(0)
+
+        self.text_color = text_color
 
         self.type = type
         self.texts = CUTSCENE_TEXT[type]
@@ -83,9 +91,12 @@ class FiFo:
         self.letter_index = 0
         self.full_text_shown = False
 
+        self.continue_text = continue_text
+
         if self.type != "transition":
-            self.bottom_text = self.master.font_1.render("Press Space to Continue", False, (255, 255, 255))
-            self.bottom_text_rect = self.bottom_text.get_rect(topleft=(5, 5))
+            if self.continue_text:
+                self.bottom_text = self.master.font_1.render("Press E to Continue", False, (255, 255, 255))
+                self.bottom_text_rect = self.bottom_text.get_rect(topleft=(5, 5))
 
             self.letter_increment_timer = CustomTimer(True)
             self.letter_increment_timer.start(40, 0)
@@ -94,7 +105,7 @@ class FiFo:
 
         for event in pygame.event.get(pygame.KEYDOWN):
             if event.type == pygame.KEYDOWN: 
-                if event.key == pygame.K_SPACE and self.halt:
+                if event.key == pygame.K_e and self.halt:
                     self.master.sounds["UI_Hover"].play()
                     if not self.full_text_shown:
                         self.full_text_shown = True
@@ -112,13 +123,14 @@ class FiFo:
         self.screen.fill((180, 0, 0))
         self.screen.blit(self.black_bg, (0, 0))
         if self.increment == 0 and self.type != "transition":
-            self.screen.blit(self.bottom_text, self.bottom_text_rect)
+            if self.continue_text:
+                self.screen.blit(self.bottom_text, self.bottom_text_rect)
 
             if self.full_text_shown:
                 text = self.texts[self.page_index]
             else:
                 text = self.texts[self.page_index][:self.letter_index]
-            text_surf = self.master.font.render(text, False, (255, 255, 255), wraplength=int(W/3*2))
+            text_surf = self.master.font.render(text, False, self.text_color, wraplength=int(W/3*2))
             rect = text_surf.get_rect(center=(W/2, H/2))
             self.screen.blit(text_surf, rect)
 

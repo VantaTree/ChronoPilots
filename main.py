@@ -31,6 +31,7 @@ class App:
     WON_CUTSCENE = 8
     LOST_CUTSCENE = 9
     GAME_FINISH = 10
+    PILOT_END_CUTSCENE = 11
 
     def __init__(self):
         
@@ -44,6 +45,8 @@ class App:
         pygame.event.set_allowed((pygame.QUIT, pygame.KEYDOWN, pygame.KEYUP, pygame.MOUSEBUTTONDOWN))
 
         self.state = self.MAIN_MENU
+        self.next_state = None
+        self.next_cutscene = None
 
         self.master = Master()
         SoundSet(self.master)
@@ -113,6 +116,12 @@ class App:
             if self.cutscene.run():
                 self.state = self.IN_GAME
                 self.cutscene = None
+        elif self.state == self.PILOT_END_CUTSCENE:
+            if self.cutscene.run():
+                self.state = self.next_state
+                self.next_state = None
+                self.cutscene = FiFo(self.master, self.next_cutscene)
+                self.next_cutscene = None
 
         elif self.state == self.GAME_FINISH:
 

@@ -165,8 +165,8 @@ class SpaceShip1(Interactable):
                 self.master.sounds.play("SFX_ObjectiveComplete", (1, 2))
                 p.inventory["vegetable"] -= 1
                 p.inventory["fruit"] -= 1
-                return checks[3]
-            else: return checks[4]
+                return checks[4]
+            else: return checks[3]
             
     def select_choice(self, obj_key, key):
 
@@ -241,8 +241,7 @@ class SpaceShip2(Interactable):
                 return checks[1]
             else: return checks[0]
         else: return checks[2]
-
-            
+          
     def select_choice(self, obj_key, key):
 
         if obj_key != "spaceship":
@@ -331,8 +330,7 @@ class SpaceShip3(Interactable):
                 self.master.sounds.play("SFX_ObjectiveComplete", (1, 2))
                 return checks[1]
             else: return checks[2]
-
-            
+           
     def select_choice(self, obj_key, key):
 
         if obj_key != "spaceship":

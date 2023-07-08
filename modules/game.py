@@ -72,8 +72,17 @@ class Game:
                 state = self.master.app.WON_CUTSCENE
             cutscene = F"end {game_state}"
 
-        self.master.app.cutscene = FiFo(self.master, cutscene)
-        self.master.app.state = state
+        if cutscene.startswith("end"):
+            self.master.app.cutscene = FiFo(self.master, cutscene)
+            self.master.app.state = state
+        else:
+            self.master.app.cutscene = FiFo(self.master, "mission_completed" if not self.player.dying else "you_died",
+                                            True, "darkred" if self.player.dying else "gold")
+            self.master.app.state = self.master.app.PILOT_END_CUTSCENE
+            self.master.app.next_state = state
+            self.master.app.next_cutscene = cutscene
+            if self.player.dying:
+                self.master.sounds["SFX_DizzyEffect"].play()
 
         self.master.ambience.fadeout()
         self.master.music.change_track("main_menu")
