@@ -265,7 +265,7 @@ class Dog(Enemy):
 
         super().check_timers()
 
-        if self.follow_timer.check() and self.state == FOLLOW:
+        if self.follow_timer.check() and self.state == AGRO:
             self.state = FOLLOW
             self.follow_for.start(randint(30, 60)*100)
         if self.follow_for.check() and self.state not in (IDLE, AGRO):
