@@ -207,6 +207,8 @@ class Player(pygame.sprite.Sprite):
                             self.health += 1
                     if event.key == pygame.K_g:
                         self.has_gun = not self.has_gun
+                    if event.key == pygame.K_f:
+                        self.has_final_resource = not self.has_final_resource
 
                     if event.key == pygame.K_ESCAPE:
                         self.master.game.pause_game()
