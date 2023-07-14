@@ -54,12 +54,15 @@ def apply_collision(master, entity, axis, rect, cell=1):
             if gapx < gapy: return
             prev_pos = entity.hitbox.right - entity.velocity.x, entity.hitbox.bottom - entity.velocity.y
             entity.hitbox.bottomright = prev_pos
-            if entity.velocity.x and entity.velocity.y:
+            if entity.velocity.x > 0 and entity.velocity.y > 0:
+            # if entity.velocity.x and entity.velocity.y:
                 entity.velocity.update()
             elif entity.velocity.x > 0:
+                entity.velocity.y = 0
                 new_vel = entity.velocity.rotate(-45)
                 entity.hitbox.move_ip(new_vel)
             elif entity.velocity.y > 0:
+                entity.velocity.x = 0
                 new_vel = entity.velocity.rotate(45)
                 entity.hitbox.move_ip(new_vel)
         elif cell == 5: # ◣
@@ -68,12 +71,15 @@ def apply_collision(master, entity, axis, rect, cell=1):
             if gapx < gapy: return
             prev_pos = entity.hitbox.right - entity.velocity.x, entity.hitbox.bottom - entity.velocity.y
             entity.hitbox.bottomright = prev_pos
-            if entity.velocity.x and entity.velocity.y:
+            if entity.velocity.x < 0 and entity.velocity.y > 0:
+            # if entity.velocity.x and entity.velocity.y:
                 entity.velocity.update()
             elif entity.velocity.x < 0:
+                entity.velocity.y = 0
                 new_vel = entity.velocity.rotate(45)
                 entity.hitbox.move_ip(new_vel)
             elif entity.velocity.y > 0:
+                entity.velocity.x = 0
                 new_vel = entity.velocity.rotate(-45)
                 entity.hitbox.move_ip(new_vel)
         elif cell == 6: # ◤
@@ -82,12 +88,15 @@ def apply_collision(master, entity, axis, rect, cell=1):
             if gapx < gapy: return
             prev_pos = entity.hitbox.x - entity.velocity.x, entity.hitbox.y - entity.velocity.y
             entity.hitbox.topleft = prev_pos
-            if entity.velocity.x and entity.velocity.y:
+            if entity.velocity.x < 0 and entity.velocity.y < 0:
+            # if entity.velocity.x and entity.velocity.y:
                 entity.velocity.update()
             elif entity.velocity.x < 0:
+                entity.velocity.y = 0
                 new_vel = entity.velocity.rotate(-45)
                 entity.hitbox.move_ip(new_vel)
             elif entity.velocity.y < 0:
+                entity.velocity.x = 0
                 new_vel = entity.velocity.rotate(45)
                 entity.hitbox.move_ip(new_vel)
         elif cell == 7: # ◥
@@ -96,12 +105,15 @@ def apply_collision(master, entity, axis, rect, cell=1):
             if gapx < gapy: return
             prev_pos = entity.hitbox.right - entity.velocity.x, entity.hitbox.y - entity.velocity.y
             entity.hitbox.topright = prev_pos
-            if entity.velocity.x and entity.velocity.y:
+            if entity.velocity.x > 0 and entity.velocity.y < 0:
+            # if entity.velocity.x and entity.velocity.y:
                 entity.velocity.update()
             elif entity.velocity.x > 0:
+                entity.velocity.y = 0
                 new_vel = entity.velocity.rotate(45)
                 entity.hitbox.move_ip(new_vel)
             elif entity.velocity.y < 0:
+                entity.velocity.x = 0
                 new_vel = entity.velocity.rotate(-45)
                 entity.hitbox.move_ip(new_vel)
 
